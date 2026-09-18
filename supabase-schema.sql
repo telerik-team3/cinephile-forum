@@ -51,3 +51,57 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- Admin authorization model
+
+-- Returns whether the current user is an administrator.
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select coalesce(
+    (select is_admin from public.profiles where id = auth.uid()),
+    false
+  );
+$$;
+
+-- Blocks ordinary users from granting themselves admin rights or unblocking themselves.
+create or replace function public.guard_profile_privileges()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Requests from the SQL editor or service_role have no signed-in user.
+  if auth.uid() is null then
+    return new;
+  end if;
+
+  if public.is_admin() then
+    return new;
+  end if;
+
+  if tg_op = 'INSERT' then
+    new.is_admin := false;
+    new.is_blocked := false;
+    return new;
+  end if;
+
+  if new.is_admin is distinct from old.is_admin
+     or new.is_blocked is distinct from old.is_blocked then
+    raise exception 'Only administrators can change admin or blocked status';
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists guard_profile_privileges on public.profiles;
+
+create trigger guard_profile_privileges
+  before insert or update on public.profiles
+  for each row execute function public.guard_profile_privileges();
