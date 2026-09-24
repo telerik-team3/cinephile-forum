@@ -15,6 +15,8 @@ import NotFound from './views/NotFound';
 import { useEffect, useState } from 'react';
 import { AppContext } from './state/app.context';
 import { supabase } from './config/supabase-config';
+import { getProfileById } from './services/profile.service';
+
 
 function App() {
 
@@ -25,27 +27,61 @@ const [appState, setAppState] = useState({
   loading: true,
 });
 
+useEffect (()=> {
+// A visitor without a session has nothing left to load. A signed-in one still
+  // needs a profile, so loading stays on until the matching row arrives below.
+const applySession = session =>{
+  const user = session?.user ?? null;
+
+setAppState(prev =>({
+  ...prev,
+  user,
+  userData : user ? prev.userData: null,
+  loading: user? prev.userData?.id !== user.id : false,
+}));
+
+};
+supabase.auth.getSession().then(({ data:{session} }) =>{
+  applySession(session);
+});
+
+const {
+data:{subscription},} = supabase.auth.onAuthStateChange ((_event,session)=> {
+  applySession(session);
+});
+return () => subscription.unsubscribe();
+},[]);
+
+// Loads the profile row, which is what tells the app who is an administrator.
+// Kept out of the listener above, because querying from inside that callback
+// can deadlock the Supabase client.
 useEffect(() => {
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    setAppState(prev => ({
-      ...prev,
-      user: session?.user ?? null,
-      loading: false,
-    }));
-  });
+  const userId = appState.user?.id;
 
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((_event, session) => {
-    setAppState(prev => ({
-      ...prev,
-      user: session?.user ?? null,
-      loading: false,
-    }));
-  });
+  if (!userId) {
+    return;
+  }
 
-  return () => subscription.unsubscribe();
-}, []);
+  let active = true;
+
+  getProfileById(userId)
+    .then(profile => {
+      if (active) {
+        setAppState(prev => ({ ...prev, userData: profile, loading: false }));
+      }
+    })
+    .catch(error => {
+      if (active) {
+        console.error('Could not load the profile:', error);
+        setAppState(prev => ({ ...prev, userData: null, loading: false }));
+      }
+    });
+
+  return () => {
+    active = false;
+  };
+}, [appState.user?.id]);
+
 
   return (
     <BrowserRouter>
