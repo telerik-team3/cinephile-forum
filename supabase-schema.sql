@@ -107,3 +107,43 @@ drop trigger if exists guard_profile_privileges on public.profiles;
 create trigger guard_profile_privileges
   before insert or update on public.profiles
   for each row execute function public.guard_profile_privileges();
+
+-- Posts table
+
+create table public.posts (
+  id uuid primary key default gen_random_uuid(),
+  author_id uuid not null references public.profiles(id) on delete cascade,
+  title text not null check (char_length(title) between 16 and 64),
+  content text not null check (char_length(content) between 32 and 8192),
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now()
+);
+
+-- author_id points at profiles rather than auth.users, so PostgREST can embed
+-- the author in one request: posts?select=*,author:profiles(username,avatar_url)
+
+create index posts_author_id_idx on public.posts (author_id);
+create index posts_created_at_idx on public.posts (created_at desc);
+
+-- Keeps updated_at honest no matter which code path performs the update.
+-- Named generally because the comments table will reuse it.
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists posts_set_updated_at on public.posts;
+
+create trigger posts_set_updated_at
+  before update on public.posts
+  for each row execute function public.set_updated_at();
+
+-- Enabled with no policies, which denies everything until the post RLS work
+-- adds them. Without this the anon key, which ships in the frontend bundle,
+-- would let anyone read, edit or delete any post.
+alter table public.posts enable row level security;
