@@ -202,5 +202,30 @@ create trigger comments_set_updated_at
   before update on public.comments
   for each row execute function public.set_updated_at();
 
--- Enabled with no policies until the comment RLS work (#30) adds them.
+-- Row Level Security
 alter table public.comments enable row level security;
+
+create policy "Comments are viewable by everyone"
+on public.comments for select
+using (true);
+
+create policy "Users can comment unless blocked"
+on public.comments for insert
+to authenticated
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Users can update their own comments unless blocked"
+on public.comments for update
+to authenticated
+using (auth.uid() = author_id)
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Authors and admins can delete comments"
+on public.comments for delete
+to authenticated
+using (auth.uid() = author_id or public.is_admin());
+
+-- Users may only write the text of a comment. The id and dates come from defaults and triggers.
+revoke insert, update on public.comments from anon, authenticated;
+grant insert (post_id, author_id, content) on public.comments to authenticated;
+grant update (content) on public.comments to authenticated;
