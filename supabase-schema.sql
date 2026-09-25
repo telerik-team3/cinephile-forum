@@ -147,3 +147,26 @@ create trigger posts_set_updated_at
 -- adds them. Without this the anon key, which ships in the frontend bundle,
 -- would let anyone read, edit or delete any post.
 alter table public.posts enable row level security;
+
+-- Comments table
+
+create table public.comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  author_id uuid not null references public.profiles(id) on delete cascade,
+  content text not null check (char_length(content) between 1 and 8192),
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now()
+);
+
+create index comments_post_id_created_at_idx on public.comments (post_id, created_at);
+create index comments_author_id_idx on public.comments (author_id);
+
+drop trigger if exists comments_set_updated_at on public.comments;
+
+create trigger comments_set_updated_at
+  before update on public.comments
+  for each row execute function public.set_updated_at();
+
+-- Enabled with no policies until the comment RLS work (#30) adds them.
+alter table public.comments enable row level security;
