@@ -31,6 +31,40 @@ on public.profiles for update
 using (auth.uid() = id)
 with check (auth.uid() = id);
 
+create or replace function public.is_blocked()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select coalesce(
+    (select is_blocked from public.profiles where id = auth.uid()),
+    false
+  );
+$$;
+
+
+create policy "Posts are readable by everyone"
+on public.posts for select
+using (true);
+
+create policy "Users can create posts"
+on public.posts for insert
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Users can update their own posts"
+on public.posts for update
+using (auth.uid() = author_id)
+with check (auth.uid() = author_id and not public.is_blocked());
+
+
+create policy "Users can delete their own posts and admins can delete posts"
+on public.posts for delete
+using ((auth.uid() = author_id and not public.is_blocked()) or public.is_admin());
+
+
+
 -- Auto create a profile row when a new auth user signs up
 create function public.handle_new_user()
 returns trigger
