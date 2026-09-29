@@ -1,10 +1,66 @@
-// Anonymous users must be able to register
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/auth.service";
 
 function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const navigate = useNavigate();
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    registerUser(email, password, username, firstName, lastName)
+      .then(() => navigate("/feed"))
+      .catch((error) => alert(error.message));
+  }
+
   return (
     <div>
       <h1>Регистрация</h1>
-      <p>формата за регистрация.</p>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Имейл
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
+        <label>
+          Парола
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <label>
+          Потребителско име
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </label>
+        <label>
+          Име
+          <input
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+        </label>
+        <label>
+          Фамилия
+          <input
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </label>
+        <button>Регистрация</button>
+      </form>
     </div>
   );
 }
