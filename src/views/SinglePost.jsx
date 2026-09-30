@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getPostById } from "../services/post.service";
+import CommentThread from "../components/CommentThread";
 
 function SinglePost() {
   const { id } = useParams();
@@ -58,6 +59,7 @@ function SinglePost() {
         {post.updated_at !== post.created_at && " (edited)"}
       </p>
       <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
+      <CommentThread key={post.id} postId={post.id} />
     </div>
   );
 }
