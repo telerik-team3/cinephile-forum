@@ -9,10 +9,15 @@ function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const navigate = useNavigate();
-  const { user } = useContext(AppContext);
+  const { user, userData } = useContext(AppContext);
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (userData?.is_blocked) {
+     alert('Your account has been blocked')
+      return;
+    }
     if (title.length < 16 || title.length > 64) {
       alert("Title must be between 16 and 64 characters");
       return;
@@ -21,6 +26,7 @@ function CreatePost() {
       alert("Your post should be between 32 and 8192 characters");
       return;
     }
+    
 
     createPost(user.id, title, content)
       .then((result) => navigate(`/posts/${result.id}`))
