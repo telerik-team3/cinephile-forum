@@ -1,15 +1,19 @@
 // Users must be able to view a single post
 
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getPostById } from "../services/post.service";
+import { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { deletePost, getPostById } from "../services/post.service";
 import CommentThread from "../components/CommentThread";
+import { AppContext } from "../state/app.context";
 
 function SinglePost() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { user, userData } = useContext(AppContext);
+  
 
   useEffect(() => {
     let active = true;
@@ -50,6 +54,22 @@ function SinglePost() {
     return <p>Post not found.</p>;
   }
 
+
+  function handleDelete() {
+    const postDeletion = window.confirm('Are you sure you want to delete this post ?');
+
+   if (!postDeletion) {
+    return;
+   }
+   deletePost(id)
+    .then(() => navigate(`/feed`))
+    .catch((error) => alert(error.message));
+
+  
+  }
+
+  
+
   return (
     <div>
       <h1>{post.title}</h1>
@@ -59,6 +79,7 @@ function SinglePost() {
         {post.updated_at !== post.created_at && " (edited)"}
       </p>
       <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
+      {(post.author_id === user.id || userData?.is_admin) && (<button onClick={handleDelete}> Delete post </button>)}
       <CommentThread key={post.id} postId={post.id} />
     </div>
   );
