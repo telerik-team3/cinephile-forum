@@ -1,5 +1,8 @@
 import { supabase } from '../config/supabase-config';
 
+
+const POST_WITH_AUTHOR = '*,author:profiles(username,avatar_url)';
+
 export const createPost = async (authorID, title, content) => {
     const {data,error} = await supabase
     .from ('posts')
@@ -19,7 +22,7 @@ export const createPost = async (authorID, title, content) => {
 export const getPostById = async (postID) => {
     const {data, error} = await supabase
     .from ('posts')
-    .select('*,author:profiles(username,avatar_url)')
+    .select(POST_WITH_AUTHOR)
     .eq('id', postID)
     .maybeSingle();
 
@@ -33,7 +36,7 @@ export const getPostById = async (postID) => {
 export const getPosts = async () => {
     const {data, error } = await supabase
     .from ('posts')
-    .select('*,author:profiles(username,avatar_url)')
+    .select(`${POST_WITH_AUTHOR}, comments(count)`)
     .order('created_at', { ascending: false });
 
 
