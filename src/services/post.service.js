@@ -54,7 +54,7 @@ export const updatePost = async (postID, title, content) => {
     .from ('posts')
     .update({title, content})
     .eq('id', postID)
-    .select()
+    .select(POST_WITH_AUTHOR)
     .single();
 
     if (error) {
