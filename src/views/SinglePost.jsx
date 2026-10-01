@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { deletePost, getPostById, updatePost } from "../services/post.service";
 import CommentThread from "../components/CommentThread";
 import { AppContext } from "../state/app.context";
+import VoteControl from "../components/VoteControl";
 
 function SinglePost() {
   const { id } = useParams();
@@ -118,6 +119,7 @@ function SinglePost() {
             {new Date(post.created_at).toLocaleDateString()}
             {post.updated_at !== post.created_at && " (edited)"}
           </p>
+          <VoteControl postId={post.id}/>
           <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
           {(post.author_id === user.id || userData?.is_admin) && (
             <button onClick={handleDelete}> Delete post </button>
