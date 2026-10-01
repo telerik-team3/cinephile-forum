@@ -121,10 +121,10 @@ function SinglePost() {
           </p>
           <VoteControl postId={post.id}/>
           <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
-          {(post.author_id === user.id || userData?.is_admin) && (
+          {((post.author_id === user.id && !userData?.is_blocked)|| userData?.is_admin) && (
             <button onClick={handleDelete}> Delete post </button>
           )}{" "}
-          {post.author_id === user.id && (
+          {(post.author_id === user.id && !userData?.is_blocked) && (
             <button onClick={handleEdit}> Edit post </button>
           )}
           <CommentThread key={post.id} postId={post.id} />{" "}

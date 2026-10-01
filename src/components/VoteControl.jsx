@@ -11,7 +11,7 @@ import {
 function VoteControl({ postId }) {
   const [score, setScore] = useState(0);
   const [vote, setVote] = useState(0);
-  const { user } = useContext(AppContext);
+  const { user, userData } = useContext(AppContext);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -81,17 +81,18 @@ function VoteControl({ postId }) {
 
   return (
     <div>
-        Rating {" "}
-        {score} {" "}
-      <button onClick={() => handleVote(1)}>
-        {" "}
-        {vote === 1 ? "Liked" : "Like"}
-      </button>
-      <button onClick={() => handleVote(-1)}>
-        {" "}
-        {vote === -1 ? "Disliked" : "Dislike"}
-      </button>
-      {error ? <p> {error} </p>: null}
+      Rating {score}{" "}
+      {!userData?.is_blocked && (
+        <>
+          <button onClick={() => handleVote(1)}>
+            {vote === 1 ? "Liked" : "Like"}{" "}
+          </button>{" "}
+          <button onClick={() => handleVote(-1)}>
+            {vote === -1 ? "Disliked" : "Dislike"}{" "}
+          </button>
+        </>
+      )}
+      {error ? <p> {error} </p> : null}
     </div>
   );
 }
