@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { getPosts } from "../services/post.service";
 import { Link } from "react-router-dom";
 
+
+
 function Feed() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  
 
   useEffect(() => {
     getPosts()
@@ -26,6 +30,7 @@ function Feed() {
         <p>
           <Link to={`/posts/${p.id}`}>{p.title}</Link> by {p.author.username}{" "}
           {new Date(p.created_at).toLocaleDateString()}{" "}
+          {p.comments[0].count} comments
         </p>
         <p>{p.content.slice(0, 32)}</p>
       </div>
