@@ -202,8 +202,23 @@ create trigger comments_set_updated_at
   before update on public.comments
   for each row execute function public.set_updated_at();
 
+
+
+-- Vote table
+
+create table public.votes (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  author_id uuid not null references public.profiles(id) on delete cascade,
+  rating integer not null check (rating in (1, -1)),
+  unique (author_id, post_id)
+
+);
+
 -- Row Level Security
 alter table public.comments enable row level security;
+
+alter table public.votes enable row level security;
 
 create policy "Comments are viewable by everyone"
 on public.comments for select
@@ -224,6 +239,27 @@ create policy "Authors and admins can delete comments"
 on public.comments for delete
 to authenticated
 using (auth.uid() = author_id or public.is_admin());
+
+
+create policy "Votes are readable by everyone"
+on public.votes for select
+using (true);
+
+create policy "Users can react to posts unless blocked"
+on public.votes for insert
+to authenticated
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Users can update their vote unless blocked"
+on public.votes for update
+to authenticated
+using (auth.uid() = author_id)
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Users can delete their vote unless blocked"
+on public.votes for delete
+to authenticated
+using (auth.uid() = author_id and not public.is_blocked());
 
 -- Users may only write the text of a comment. The id and dates come from defaults and triggers.
 revoke insert, update on public.comments from anon, authenticated;
