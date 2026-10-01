@@ -36,7 +36,7 @@ export const getPostById = async (postID) => {
 export const getPosts = async () => {
     const {data, error } = await supabase
     .from ('posts')
-    .select(`${POST_WITH_AUTHOR}, comments(count)`)
+    .select(`${POST_WITH_AUTHOR}, comments(count), votes(rating)`)
     .order('created_at', { ascending: false });
 
 
