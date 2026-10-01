@@ -30,7 +30,8 @@ function Feed() {
         <p>
           <Link to={`/posts/${p.id}`}>{p.title}</Link> by {p.author.username}{" "}
           {new Date(p.created_at).toLocaleDateString()}{" "}
-          {p.comments[0].count} comment(s)
+          {p.comments[0].count} comment(s) {" "}
+          Rating {p.votes.reduce((acc, curr) => acc + curr.rating , 0)} 
         </p>
         <p>{p.content.slice(0, 32)}</p>
       </div>
