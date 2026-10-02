@@ -1,20 +1,24 @@
-// One comment in the thread, with an edit mode for its author.
+// One comment in the thread, with edit and delete controls.
 
 import { useState, useContext } from "react";
 import { AppContext } from "../state/app.context";
-import { updateComment } from "../services/comment.service";
+import { updateComment, deleteComment } from "../services/comment.service";
 
 const MAX_LENGTH = 8192;
 const BLOCKED_MESSAGE = "Your account is blocked, so you cannot edit comments.";
+const DELETE_REFUSED_MESSAGE = "This comment could not be deleted.";
 
-function CommentItem({ comment, onUpdated }) {
+function CommentItem({ comment, onUpdated, onDeleted }) {
   const { user, userData } = useContext(AppContext);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  const canEdit = comment.author_id === user.id && !userData?.is_blocked;
+  const isAuthor = comment.author_id === user.id && !userData?.is_blocked;
+  const canEdit = isAuthor;
+  const canDelete = isAuthor || userData?.is_admin;
 
   function startEditing() {
     setDraft(comment.content);
@@ -60,6 +64,26 @@ function CommentItem({ comment, onUpdated }) {
       });
   }
 
+  function handleDelete() {
+    if (!window.confirm("Are you sure you want to delete this comment?")) {
+      return;
+    }
+
+    setError(null);
+    setDeleting(true);
+
+    deleteComment(comment.id)
+      .then(() => {
+        onDeleted(comment.id);
+      })
+      .catch((err) => {
+        // PGRST116 means no row was deleted: RLS refused it (the user was
+        // blocked after the page loaded) or the comment is already gone.
+        setError(err.code === "PGRST116" ? DELETE_REFUSED_MESSAGE : err.message);
+        setDeleting(false);
+      });
+  }
+
   return (
     <div>
       <p>
@@ -83,7 +107,17 @@ function CommentItem({ comment, onUpdated }) {
       ) : (
         <>
           <p style={{ whiteSpace: "pre-wrap" }}>{comment.content}</p>
-          {canEdit && <button onClick={startEditing}>Edit</button>}
+          {canEdit && (
+            <button onClick={startEditing} disabled={deleting}>
+              Edit
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={handleDelete} disabled={deleting}>
+              {deleting ? "Deleting" : "Delete"}
+            </button>
+          )}
+          {error && <p>{error}</p>}
         </>
       )}
     </div>

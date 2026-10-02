@@ -238,7 +238,7 @@ with check (auth.uid() = author_id and not public.is_blocked());
 create policy "Authors and admins can delete comments"
 on public.comments for delete
 to authenticated
-using (auth.uid() = author_id or public.is_admin());
+using ((auth.uid() = author_id and not public.is_blocked()) or public.is_admin());
 
 
 create policy "Votes are readable by everyone"

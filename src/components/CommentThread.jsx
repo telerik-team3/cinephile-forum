@@ -43,6 +43,10 @@ function CommentThread({ postId }) {
     setComments((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
   }
 
+  function handleDeleted(id) {
+    setComments((prev) => prev.filter((c) => c.id !== id));
+  }
+
   function renderComments() {
     if (loading) {
       return <p>Loading comments</p>;
@@ -57,7 +61,12 @@ function CommentThread({ postId }) {
     }
 
     return comments.map((c) => (
-      <CommentItem key={c.id} comment={c} onUpdated={handleUpdated} />
+      <CommentItem
+        key={c.id}
+        comment={c}
+        onUpdated={handleUpdated}
+        onDeleted={handleDeleted}
+      />
     ));
   }
 
