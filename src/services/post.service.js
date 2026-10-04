@@ -75,3 +75,17 @@ export const deletePost = async (postID) => {
         throw error;
     }
 }
+
+
+
+export const getPostCount = async () => {
+  const { count, error } = await supabase
+    .from("posts")
+    .select("*", { count: "exact", head: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return count;
+};
