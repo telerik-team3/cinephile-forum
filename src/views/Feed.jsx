@@ -6,18 +6,20 @@ import { Link } from "react-router-dom";
 
 
 
+
 function Feed() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sort, setSort] = useState("newest");
 
   
 
   useEffect(() => {
     let active = true;
     if (searchTerm) {
-      searchPosts(searchTerm)
+      searchPosts(searchTerm, sort === "oldest")
       .then((res) => {
         if (active) {
           setPosts(res)
@@ -35,7 +37,7 @@ function Feed() {
       });
 
     } else {
-      getPosts()
+      getPosts(sort === "oldest")
       .then((result) => {
         if (active) {
           setPosts(result)
@@ -53,9 +55,21 @@ function Feed() {
       });
     }
     return () => active = false;
-  }, [searchTerm]);
+  }, [searchTerm, sort]);
 
-
+  function getRating(p) {
+    return p.votes.reduce((acc, curr) => acc + curr.rating , 0)
+  }
+function sortPosts(posts, sort) {
+  if (sort === "most-comments" ) {
+   return posts.slice().sort((a, b) => b.comments[0].count - a.comments[0].count)
+  }
+  if (sort === "most-liked") {
+   return posts.slice().sort((a, b) => getRating(b) - getRating(a))
+  } else {
+    return posts;
+  }
+}
   function renderPosts(posts) {
     return posts.map((p) => (
       <div key={p.id}>
@@ -63,7 +77,7 @@ function Feed() {
           <Link to={`/posts/${p.id}`}>{p.title}</Link> by {p.author.username}{" "}
           {new Date(p.created_at).toLocaleDateString()}{" "}
           {p.comments[0].count} comment(s) {" "}
-          Rating {p.votes.reduce((acc, curr) => acc + curr.rating , 0)} 
+          Rating {getRating(p)} 
         </p>
         <p>{p.content.slice(0, 32)}</p>
       </div>
@@ -74,7 +88,7 @@ function Feed() {
   function handleSearch(e) {
     e.preventDefault();
 
-    searchPosts(searchTerm)
+    searchPosts(searchTerm, sort === "oldest")
     .then((res) => setPosts(res))
     .catch((e) => alert(e.message));
   }
@@ -88,7 +102,13 @@ function Feed() {
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search posts"/>
       </form>
-      {loading ? <p>Loading</p> : error ? <p>{error}</p> : posts.length > 0 ? renderPosts(posts) : <p>No posts found</p>}
+      <select value={sort} onChange={e => setSort(e.target.value)}>
+        <option value={"newest"}>Newest</option>
+        <option value={"oldest"}>Oldest</option>
+        <option value={"most-comments"}>Most comments</option>
+        <option value={"most-liked"}>Most liked</option>
+      </select>
+      {loading ? <p>Loading</p> : error ? <p>{error}</p> : posts.length > 0 ? renderPosts(sortPosts(posts, sort)) : <p>No posts found</p>}
     </div>
   );
 }

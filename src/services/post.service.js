@@ -35,11 +35,11 @@ export const getPostById = async (postID) => {
   return data;
 }
 
-export const getPosts = async () => {
+export const getPosts = async (oldest = false) => {
     const {data, error } = await supabase
     .from ('posts')
     .select(POST_WITH_FULL_DETAILS)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: oldest });
 
 
 
@@ -93,12 +93,12 @@ export const getPostCount = async () => {
 };
 
 
-export const searchPosts = async (term) => {
+export const searchPosts = async (term, oldest = false) => {
   const { data, error} = await supabase
   .from('posts')
   .select(POST_WITH_FULL_DETAILS)
   .or(`title.ilike.%${term}%,content.ilike.%${term}%`)
-  .order('created_at', { ascending: false });
+  .order('created_at', { ascending: oldest });
 
 
   if (error) {
@@ -107,3 +107,4 @@ export const searchPosts = async (term) => {
 
   return data;
 };
+
