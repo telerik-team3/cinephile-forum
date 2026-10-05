@@ -1,10 +1,12 @@
 // Admin dashboard
 
+import UserSearch from '../components/UserSearch';
+
 function Admin() {
   return (
     <div>
-      <h1>Администрация</h1>
-      <p>dashboard за управление на потребители и постове.</p>
+      <h1>Administration</h1>
+      <UserSearch />
     </div>
   );
 }
