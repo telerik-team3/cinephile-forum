@@ -1,9 +1,12 @@
 // Lets administrators find users by username, email or name.
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AppContext } from "../state/app.context";
 import { searchUsers } from "../services/profile.service";
+import UserRow from "./UserRow";
 
 function UserSearch() {
+  const { user } = useContext(AppContext);
   const [query, setQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
@@ -50,6 +53,10 @@ function UserSearch() {
     setSearchTerm(term);
   }
 
+  function handleUpdated(updated) {
+    setUsers((prev) => prev.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)));
+  }
+
   function renderUsers() {
     if (loading) {
       return <p>Loading users</p>;
@@ -72,17 +79,17 @@ function UserSearch() {
             <th>Email</th>
             <th>Role</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.username ?? "-"}</td>
-              <td>{[u.first_name, u.last_name].filter(Boolean).join(" ") || "-"}</td>
-              <td>{u.email}</td>
-              <td>{u.is_admin ? "Admin" : "User"}</td>
-              <td>{u.is_blocked ? "Blocked" : "Active"}</td>
-            </tr>
+            <UserRow
+              key={u.id}
+              profile={u}
+              isSelf={u.id === user.id}
+              onUpdated={handleUpdated}
+            />
           ))}
         </tbody>
       </table>

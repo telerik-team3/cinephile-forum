@@ -37,3 +37,37 @@ export const searchUsers = async(searchTerm) =>{
   }
   return data;
 };
+
+
+// Blocks or unblocks a user. RLS lets only administrators change another
+// user's profile, and .single() turns a refused update (0 rows) into an error.
+export const setUserBlocked = async (userID, isBlocked) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ is_blocked: isBlocked })
+    .eq('id', userID)
+    .select('id, is_admin, is_blocked')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+// Grants or removes administrator rights, with the same checks as above.
+export const setUserAdmin = async (userID, isAdmin) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ is_admin: isAdmin })
+    .eq('id', userID)
+    .select('id, is_admin, is_blocked')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
