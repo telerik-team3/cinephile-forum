@@ -3,6 +3,8 @@ import { supabase } from '../config/supabase-config';
 
 const POST_WITH_AUTHOR = '*,author:profiles(username,avatar_url)';
 
+const POST_WITH_FULL_DETAILS = `${POST_WITH_AUTHOR}, comments(count), votes(rating)`;
+
 export const createPost = async (authorID, title, content) => {
     const {data,error} = await supabase
     .from ('posts')
@@ -36,7 +38,7 @@ export const getPostById = async (postID) => {
 export const getPosts = async () => {
     const {data, error } = await supabase
     .from ('posts')
-    .select(`${POST_WITH_AUTHOR}, comments(count), votes(rating)`)
+    .select(POST_WITH_FULL_DETAILS)
     .order('created_at', { ascending: false });
 
 
@@ -88,4 +90,20 @@ export const getPostCount = async () => {
   }
 
   return count;
+};
+
+
+export const searchPosts = async (term) => {
+  const { data, error} = await supabase
+  .from('posts')
+  .select(POST_WITH_FULL_DETAILS)
+  .or(`title.ilike.%${term}%,content.ilike.%${term}%`)
+  .order('created_at', { ascending: false });
+
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 };
