@@ -138,3 +138,18 @@ export const getMostCommentedPosts = async () => {
 
   return sorted.slice(0, 10);
 };
+
+
+export const getPostsByAuthor = async (authorID) => {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_WITH_FULL_DETAILS)
+    .eq("author_id", authorID)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
