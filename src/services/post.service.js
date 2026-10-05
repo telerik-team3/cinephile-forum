@@ -108,3 +108,33 @@ export const searchPosts = async (term, oldest = false) => {
   return data;
 };
 
+
+export const getNewestPosts = async () => {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_WITH_AUTHOR)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+export const getMostCommentedPosts = async () => {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_WITH_FULL_DETAILS);
+
+  if (error) {
+    throw error;
+  }
+
+  const sorted = [...data].sort(
+    (a, b) => b.comments[0].count - a.comments[0].count
+  );
+
+  return sorted.slice(0, 10);
+};
