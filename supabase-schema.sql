@@ -142,6 +142,55 @@ create trigger guard_profile_privileges
   before insert or update on public.profiles
   for each row execute function public.guard_profile_privileges();
 
+-- Lets administrators update any profile, for example to block a user or grant admin rights.
+-- guard_profile_privileges still decides who may change is_admin and is_blocked.
+create policy "Admin can update any profile"
+on public.profiles for update
+using (public.is_admin())
+with check (public.is_admin());
+
+
+-- Lets administrators search users by username, email or name.
+-- Emails live in auth.users, which the browser cannot read, so the search runs here.
+create or replace function public.admin_search_users(search_term text)
+Returns table(
+id uuid,
+username text,
+first_name text,
+last_name text,
+email text,
+avatar_url text,
+is_admin boolean,
+is_blocked boolean,
+created_at timestamp with time zone
+)
+language plpgsql
+security definer 
+stable
+set search_path = public
+as $$
+begin
+if not public.is_admin() then
+raise exception 'Only administrators can search users'
+using errcode = '42501';
+end if;
+
+return query
+select p.id,p.username,p.first_name,p.last_name,u.email::text,
+p.avatar_url,p.is_admin,p.is_blocked,p.created_at
+from public.profiles p
+join auth.users u on u.id = p.id
+where coalesce (search_term,'') = ''
+or p.username ilike '%' || search_term || '%'
+or u.email ilike '%' || search_term || '%'
+or concat_ws (' ',p.first_name,p.last_name) ilike '%' || search_term || '%' order by p.created_at desc
+limit 50;
+end;
+$$;
+
+revoke execute on function public.admin_search_users(text) from public, anon;
+grant execute on function public.admin_search_users(text) to authenticated;
+
 -- Posts table
 
 create table public.posts (
