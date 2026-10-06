@@ -28,6 +28,23 @@ export const getUserCount = async () => {
   return count;
 };
 
+
+export const updateProfile = async (userID, firstName, lastName, phone) => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ first_name: firstName, last_name: lastName, phone })
+    .eq("id", userID)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+
 // Searches users for the admin dashboard. The database function checks that the
 // caller is an admin, and only it can read the users' emails.
 export const searchUsers = async(searchTerm) =>{
