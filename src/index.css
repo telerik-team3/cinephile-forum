@@ -1,122 +1,178 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/* Our layer on top of Pico (imported first in main.jsx).
+   Pico gives every plain element its look and both themes. These rules handle
+   what Pico cannot know: our layout inside #root, the top bar, compact buttons
+   and the card look of posts, comments and admin sections. */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+/* Light theme: grey page with white cards. The dark theme keeps Pico's colours.
+   :root is needed, otherwise Pico's own :root rule is more specific and wins. */
+:root[data-theme="light"] {
+  --pico-background-color: #f4f5f7;
+  --pico-card-background-color: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
-  margin: 0;
-}
-
+/* Pico centres only body > main, but our whole app lives inside #root. */
 #root {
-  width: 1126px;
-  max-width: 100%;
+  max-width: 960px;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  padding: 0 1rem 3rem;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
+/* Top bar: stays visible while scrolling. The wide shadow paints its background
+   across the whole window, and clip-path cuts it off above and below the bar. */
+#root > header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 2rem;
+  padding: 0.75rem 0;
+  background: var(--pico-card-background-color);
+  box-shadow: 0 0 0 100vmax var(--pico-card-background-color);
+  clip-path: inset(0 -100vmax);
+}
+
+#root > header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--pico-primary);
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+nav a {
+  color: var(--pico-muted-color);
+  text-decoration: none;
   font-weight: 500;
-  color: var(--text-h);
+}
+
+nav a:hover {
+  color: var(--pico-primary);
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+
+/* Small buttons wherever they sit next to content. */
+nav button,
+td button,
+article button {
+  margin: 0 0.25rem 0 0;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
 }
-p {
+
+/* Secondary actions are outlined instead of solid blue.
+   Pico builds every button from these variables, so changing them is enough. */
+nav button,
+td button,
+article button {
+  --pico-background-color: transparent;
+  --pico-color: var(--pico-primary);
+  --pico-border-color: var(--pico-muted-border-color);
+}
+
+/* A search field and its button side by side. */
+form:has(> input[type="search"]) {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+form:has(> input[type="search"]) > * {
+  margin-bottom: 0;
+}
+
+form:has(> input[type="search"]) > button {
+  flex: none;
+  width: auto;
+}
+
+select {
+  width: auto;
+  min-width: 12rem;
+}
+
+/* Admin tabs: the selected tab is solid, the other one is outlined. */
+[role="group"] {
+  max-width: 16rem;
+}
+
+[role="group"] button[aria-pressed="false"] {
+  --pico-background-color: transparent;
+  --pico-color: var(--pico-primary);
+}
+
+/* Cards: Pico already draws every <article> as a card. */
+article h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+article h3 a {
+  color: var(--pico-contrast);
+  text-decoration: none;
+}
+
+article h3 a:hover {
+  color: var(--pico-primary);
+}
+
+article small {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--pico-muted-color);
+}
+
+article p,
+article > div {
+  margin-bottom: 0.75rem;
+}
+
+/* Sections (comments, admin users and posts) sit on a white card too. */
+section {
+  padding: 1.25rem;
+  border-radius: var(--pico-border-radius);
+  background: var(--pico-card-background-color);
+  box-shadow: var(--pico-card-box-shadow);
+  overflow-x: auto;
+}
+
+section h2 {
+  font-size: 1.25rem;
+}
+
+/* Comments are articles inside the comments card: flat rows, not cards. */
+section article {
   margin: 0;
+  padding: 0.75rem 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--pico-muted-border-color);
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
+/* Tables: a bit denser so the admin table fits, no grey cells, and the action
+   buttons stay on one line. */
 table {
-  margin: 16px auto;
-  border-collapse: collapse;
+  font-size: 0.9rem;
 }
 
 th,
 td {
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0.6rem;
+  background: transparent;
+}
+
+td:last-child {
+  white-space: nowrap;
 }

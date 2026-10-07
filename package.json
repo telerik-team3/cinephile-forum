@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@picocss/pico": "^2.1.1",
     "@supabase/supabase-js": "^2.116.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -28,6 +29,4 @@
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
   }
-
-  
 }

@@ -85,11 +85,11 @@ function CommentItem({ comment, onUpdated, onDeleted }) {
   }
 
   return (
-    <div>
-      <p>
+    <article>
+      <small>
         {comment.author.username} on {new Date(comment.created_at).toLocaleString()}
         {comment.updated_at !== comment.created_at && " (edited)"}
-      </p>
+      </small>
       {editing ? (
         <form onSubmit={handleSave}>
           <textarea
@@ -120,7 +120,7 @@ function CommentItem({ comment, onUpdated, onDeleted }) {
           {error && <p>{error}</p>}
         </>
       )}
-    </div>
+    </article>
   );
 }
 

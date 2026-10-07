@@ -4,7 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>forum-project</title>
+    <title>Cinephile Forum</title>
+    <script>
+      // Applies the saved theme before React loads, so a dark page does not flash white.
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

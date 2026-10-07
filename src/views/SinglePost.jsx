@@ -113,20 +113,22 @@ function SinglePost() {
         </form>
       ) : (
         <div>
-          <h1>{post.title}</h1>
-          <p>
-            by {post.author.username} on{" "}
-            {new Date(post.created_at).toLocaleDateString()}
-            {post.updated_at !== post.created_at && " (edited)"}
-          </p>
-          <VoteControl postId={post.id}/>
-          <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
-          {((post.author_id === user.id && !userData?.is_blocked)|| userData?.is_admin) && (
-            <button onClick={handleDelete}> Delete post </button>
-          )}{" "}
-          {(post.author_id === user.id && !userData?.is_blocked) && (
-            <button onClick={handleEdit}> Edit post </button>
-          )}
+          <article>
+            <h1>{post.title}</h1>
+            <small>
+              by {post.author.username} on{" "}
+              {new Date(post.created_at).toLocaleDateString()}
+              {post.updated_at !== post.created_at && " (edited)"}
+            </small>
+            <VoteControl postId={post.id}/>
+            <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
+            {((post.author_id === user.id && !userData?.is_blocked)|| userData?.is_admin) && (
+              <button onClick={handleDelete}> Delete post </button>
+            )}{" "}
+            {(post.author_id === user.id && !userData?.is_blocked) && (
+              <button onClick={handleEdit}> Edit post </button>
+            )}
+          </article>
           <CommentThread key={post.id} postId={post.id} />{" "}
         </div>
       )}

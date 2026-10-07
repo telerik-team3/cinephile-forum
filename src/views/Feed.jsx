@@ -65,18 +65,19 @@ function Feed() {
 
   function renderPosts(posts) {
     return posts.map((p) => (
-      <div key={p.id}>
-        <p>
-          <Link to={`/posts/${p.id}`}>{p.title}</Link> by {p.author.username}{" "}
-          {new Date(p.created_at).toLocaleDateString()}{" "}
-          {p.comments[0].count} comment(s) {" "}
-          Rating {getRating(p)} 
-        </p>
-        <p>{p.content.slice(0, 32)}</p>
+      <article key={p.id}>
+        <h3>
+          <Link to={`/posts/${p.id}`}>{p.title}</Link>
+        </h3>
+        <small>
+          by {p.author.username} · {new Date(p.created_at).toLocaleDateString()} ·{" "}
+          {p.comments[0].count} comment(s) · Rating {getRating(p)}
+        </small>
+        <p>{p.content.length > 150 ? `${p.content.slice(0, 150)}…` : p.content}</p>
         {((p.author_id === user.id && !userData?.is_blocked)|| userData?.is_admin) && (
             <button onClick={() => handleDelete(p.id)}> Delete post </button>
           )}{" "}
-      </div>
+      </article>
     ));
   }
 

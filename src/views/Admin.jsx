@@ -10,11 +10,13 @@ function Admin() {
   return (
     <div>
       <h1>Administration</h1>
-      <div>
-        <button onClick={() => setTab('users')} disabled={tab === 'users'}>
+      {/* role="group" makes Pico draw the buttons as one switch. aria-pressed tells
+          screen readers and our CSS which tab is selected. */}
+      <div role="group">
+        <button onClick={() => setTab('users')} aria-pressed={tab === 'users'}>
           Users
         </button>
-        <button onClick={() => setTab('posts')} disabled={tab === 'posts'}>
+        <button onClick={() => setTab('posts')} aria-pressed={tab === 'posts'}>
           Posts
         </button>
       </div>
