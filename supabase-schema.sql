@@ -44,27 +44,6 @@ as $$
   );
 $$;
 
-
-create policy "Posts are readable by everyone"
-on public.posts for select
-using (true);
-
-create policy "Users can create posts"
-on public.posts for insert
-with check (auth.uid() = author_id and not public.is_blocked());
-
-create policy "Users can update their own posts"
-on public.posts for update
-using (auth.uid() = author_id)
-with check (auth.uid() = author_id and not public.is_blocked());
-
-
-create policy "Users can delete their own posts and admins can delete posts"
-on public.posts for delete
-using ((auth.uid() = author_id and not public.is_blocked()) or public.is_admin());
-
-
-
 -- Auto create a profile row when a new auth user signs up
 create function public.handle_new_user()
 returns trigger
@@ -226,10 +205,26 @@ create trigger posts_set_updated_at
   before update on public.posts
   for each row execute function public.set_updated_at();
 
--- Enabled with no policies, which denies everything until the post RLS work
--- adds them. Without this the anon key, which ships in the frontend bundle,
--- would let anyone read, edit or delete any post.
+-- Without RLS the anon key, which ships in the frontend bundle, would let
+-- anyone read, edit or delete any post. The policies below decide who may.
 alter table public.posts enable row level security;
+
+create policy "Posts are readable by everyone"
+on public.posts for select
+using (true);
+
+create policy "Users can create posts"
+on public.posts for insert
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Users can update their own posts"
+on public.posts for update
+using (auth.uid() = author_id)
+with check (auth.uid() = author_id and not public.is_blocked());
+
+create policy "Users can delete their own posts and admins can delete posts"
+on public.posts for delete
+using ((auth.uid() = author_id and not public.is_blocked()) or public.is_admin());
 
 -- Comments table
 
