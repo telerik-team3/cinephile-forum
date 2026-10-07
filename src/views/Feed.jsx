@@ -1,9 +1,10 @@
 // Users must be able to browse posts created by other users with an option to sort and filter them
 
-import { useState, useEffect } from "react";
-import { getPosts, searchPosts } from "../services/post.service";
+import { useState, useEffect, useContext } from "react";
+import { getPosts, searchPosts, deletePost } from "../services/post.service";
 import { Link } from "react-router-dom";
 import { getRating, sortPosts } from "../lib/posts.lib";
+import { AppContext } from "../state/app.context";
 
 
 
@@ -15,6 +16,7 @@ function Feed() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sort, setSort] = useState("newest");
+  const { user, userData} = useContext(AppContext)
 
   
 
@@ -71,6 +73,9 @@ function Feed() {
           Rating {getRating(p)} 
         </p>
         <p>{p.content.slice(0, 32)}</p>
+        {((p.author_id === user.id && !userData?.is_blocked)|| userData?.is_admin) && (
+            <button onClick={() => handleDelete(p.id)}> Delete post </button>
+          )}{" "}
       </div>
     ));
   }
@@ -82,6 +87,19 @@ function Feed() {
     searchPosts(searchTerm, sort === "oldest")
     .then((res) => setPosts(res))
     .catch((e) => alert(e.message));
+  }
+
+   function handleDelete(postId) {
+    const postDeletion = window.confirm(
+      "Are you sure you want to delete this post ?",
+    );
+
+    if (!postDeletion) {
+      return;
+    }
+    deletePost(postId)
+      .then(() => setPosts(posts.filter((p) => p.id !== postId)) )
+      .catch((error) => alert(error.message));
   }
 
   return (
