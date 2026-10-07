@@ -66,18 +66,21 @@ export const updatePost = async (postID, title, content) => {
   return data;
 }
 
-
 export const deletePost = async (postID) => {
-    const {error} = await supabase
+    const {data, error} = await supabase
     .from ('posts')
     .delete()
-    .eq('id', postID);
+    .eq('id', postID)
+    .select('id');
 
     if (error) {
         throw error;
     }
-}
 
+    if (data.length === 0) {
+        throw new Error('The post was not deleted. You may not have permission to delete it.');
+    }
+}
 
 
 export const getPostCount = async () => {

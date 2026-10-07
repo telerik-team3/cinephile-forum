@@ -81,12 +81,24 @@ describe("Create post tests", () => {
     const obj = {};
     supabase.from.mockReturnValue(obj);
     obj.delete = vi.fn().mockReturnValue(obj);
-    obj.eq = vi.fn().mockResolvedValue({ error: null });
+    obj.eq = vi.fn().mockReturnValue(obj);
+    obj.select = vi.fn().mockResolvedValue({ data: [{ id: 1 }], error: null });
 
     const result = await deletePost(1);
     expect(result).toBeUndefined();
     expect(obj.delete).toHaveBeenCalled();
     expect(obj.eq).toHaveBeenCalledWith("id", 1);
+    expect(obj.select).toHaveBeenCalledWith("id");
+  });
+
+  it("deletePost should throw when no post was deleted", async () => {
+    const obj = {};
+    supabase.from.mockReturnValue(obj);
+    obj.delete = vi.fn().mockReturnValue(obj);
+    obj.eq = vi.fn().mockReturnValue(obj);
+    obj.select = vi.fn().mockResolvedValue({ data: [], error: null });
+
+    await expect(deletePost(1)).rejects.toThrow("The post was not deleted");
   });
 
   it("updatePost should correctly change the user post", async () => {
