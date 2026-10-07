@@ -109,3 +109,14 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+table {
+  margin: 16px auto;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+}

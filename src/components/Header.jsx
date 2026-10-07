@@ -4,7 +4,7 @@ import { AppContext } from "../state/app.context";
 import { logoutUser } from "../services/auth.service";
 
 function Header() {
-  const { user } = useContext(AppContext);
+  const { user, userData } = useContext(AppContext);
 
   return (
     <header>
@@ -22,7 +22,7 @@ function Header() {
         <Link to="/feed">Постове</Link>
         <Link to="/create-post">Нов пост</Link>
         <Link to="/profile">Профил</Link>
-        <Link to="/admin">Админ</Link>
+        {userData?.is_admin && <Link to="/admin">Админ</Link>}
       </nav>
     </header>
   );
