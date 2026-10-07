@@ -57,14 +57,17 @@ function Home() {
       </ul>
 
 
-      {user ? (
-        <Link to="/feed">Към форума</Link>
-      ) : (
-        <>
-          <Link to="/login">Вход</Link>
-          <Link to="/register">Регистрация</Link>
-        </>
-      )}
+      {/* role="button" makes Pico draw these links as buttons. */}
+      <p>
+        {user ? (
+          <Link to="/feed" role="button">Към форума</Link>
+        ) : (
+          <>
+            <Link to="/login" role="button">Вход</Link>
+            <Link to="/register" role="button">Регистрация</Link>
+          </>
+        )}
+      </p>
     </div>
   );
 }

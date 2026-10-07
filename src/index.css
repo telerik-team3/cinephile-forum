@@ -45,7 +45,7 @@ nav {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 nav a {
@@ -80,6 +80,13 @@ article button {
   --pico-background-color: transparent;
   --pico-color: var(--pico-primary);
   --pico-border-color: var(--pico-muted-border-color);
+}
+
+/* Links drawn as buttons (home page). A second one next to the first is outlined. */
+a[role="button"] + a[role="button"] {
+  margin-left: 0.5rem;
+  --pico-background-color: transparent;
+  --pico-color: var(--pico-primary);
 }
 
 /* A search field and its button side by side. */
