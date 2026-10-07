@@ -29,3 +29,6 @@ coverage/
 
 # Local personal notes (never pushed)
 .local/
+
+# Vitest reports and artifacts
+.vitest/

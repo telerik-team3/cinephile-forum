@@ -13,7 +13,7 @@ function VoteControl({ postId }) {
   const [vote, setVote] = useState(0);
   const { user, userData } = useContext(AppContext);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     let active = true;
@@ -29,11 +29,7 @@ function VoteControl({ postId }) {
           setError(e.message);
         }
       })
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
-      });
+   
     getVoteScore(postId)
       .then((result) => {
         if (active) {
@@ -45,11 +41,7 @@ function VoteControl({ postId }) {
           setError(e.message);
         }
       })
-      .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
-      });
+     
 
     return () => (active = false);
   }, [postId, user.id]);
