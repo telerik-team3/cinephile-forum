@@ -14,7 +14,7 @@ function UserProfile() {
   useEffect(() => {
     getProfileById(user.id).then((data) => setProfile(data));
     getPostsByAuthor(user.id).then((data) => setPosts(data));
-  }, []);
+  }, [user.id]);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -22,13 +22,14 @@ function UserProfile() {
   const [avatarFile, setAvatarFile] = useState(null);
   const [saveError, setSaveError] = useState("");
 
-  useEffect(() => {
-    if (profile) {
-      setFirstName(profile.first_name || "");
-      setLastName(profile.last_name || "");
-      setPhone(profile.phone || "");
-    }
-    }, [profile]);
+  // Fill the form with the saved profile each time editing starts.
+  function startEditing() {
+    setFirstName(profile.first_name || "");
+    setLastName(profile.last_name || "");
+    setPhone(profile.phone || "");
+    setIsEditing(true);
+  }
+
 
   const handleSave = async () => {
     setSaveError("");
@@ -92,7 +93,7 @@ function UserProfile() {
                 {profile.username} — {profile.first_name} {profile.last_name}
               </p>
               {profile.phone && <p>Телефон: {profile.phone}</p>}
-              <button onClick={() => setIsEditing(true)}>Редактирай</button>
+              <button onClick={startEditing}>Редактирай</button>
             </div>
           )}
 
