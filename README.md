@@ -88,9 +88,69 @@ Supabase handles all authentication. All data is stored in Supabase's PostgreSQL
 
 _A link will be added once the application is deployed._
 
+
 ## Getting started
 
-_Setup instructions (requirements, environment variables, Supabase configuration, and commands to run the app and its tests) will be added once the project is set up._
+### Requirements
+
+- [Node.js](https://nodejs.org/) **20.19+** or **22.12+** (required by Vite 8). npm comes with Node.js.
+- A [Supabase](https://supabase.com/) project (the team's existing one, or a new one of your own).
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/telerik-team3/cinephile-forum.git
+cd cinephile-forum
+```
+
+### 2. Install the dependencies
+
+```bash
+npm install
+```
+
+This installs everything listed in `package.json`, including React, React Router, Supabase, Pico.css, Vite and Vitest.
+
+### 3. Create the `.env` file
+
+Create a file named exactly `.env` in the **project's root folder**, next to `package.json` (not inside `src` or any subfolder):
+
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-publishable-or-anon-key
+```
+
+Where to find the values in the Supabase dashboard:
+
+- **`VITE_SUPABASE_URL`**: *Project Settings → Data API*, the **Project URL**. Use only the base address ending in `.supabase.co`, without `/rest/v1/`.
+- **`VITE_SUPABASE_ANON_KEY`**: *Project Settings → API Keys*, the **publishable** key (or the legacy **anon** key).
+
+> ⚠️ Never use the **secret** or **service_role** key. It bypasses all Row Level Security policies and must never be placed in a frontend app.
+
+The `.env` file is listed in `.gitignore`, so it is never committed. Each developer creates their own copy.
+
+### 4. Set up the database (new Supabase projects only)
+
+If you are using a brand-new Supabase project, create the tables, functions and security policies by running the contents of [`supabase-schema.sql`](./supabase-schema.sql) in the Supabase dashboard's **SQL Editor**. This step is not needed when using the team's existing project.
+
+### 5. Run the app
+
+```bash
+npm run dev
+```
+
+Then open **http://localhost:5173** in your browser.
+
+> If the page is blank and the browser console shows `supabaseUrl is required`, the `.env` file is missing, misnamed or in the wrong folder. Fix it and restart `npm run dev`, since Vite only reads `.env` on startup.
+
+### 6. Run the tests and the linter
+
+```bash
+npm test        # runs the Vitest test suite
+npm run lint    # checks the code with ESLint
+```
+
+The service tests mock Supabase, so they do not need a `.env` file or a database connection.
 
 ## Database schema
 
