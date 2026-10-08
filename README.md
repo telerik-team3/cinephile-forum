@@ -154,7 +154,120 @@ The service tests mock Supabase, so they do not need a `.env` file or a database
 
 ## Database schema
 
-_A diagram and description of the database tables will be added once the schema is in place._
+All data is stored in Supabase (PostgreSQL). The full script, with tables, functions, triggers and Row Level Security policies, is in [`supabase-schema.sql`](./supabase-schema.sql).
+
+### Relationships
+
+```
+auth.users ──1:1── profiles
+                      │
+                      ├──< posts ──< comments
+                      │      │
+                      │      └──< votes
+                      ├──< comments (author)
+                      └──< votes (voter)
+```
+
+- Every **profile** belongs to one Supabase Auth user.
+- A **post** has one author (a profile) and many comments and votes.
+- A **comment** and a **vote** each belong to one post and one profile.
+- Deleting a profile deletes their posts, comments and votes. Deleting a post deletes its comments and votes.
+
+---
+
+### `profiles`
+
+Public profile data for each registered user. Login data (email, password) lives in Supabase's own `auth.users` table.
+
+| Column       | Type        | Rules |
+|--------------|-------------|-------|
+| `id`         | uuid        | Primary key. Same ID as the user's `auth.users` row; deleted when that user is deleted |
+| `username`   | text        | Unique |
+| `first_name` | text        | |
+| `last_name`  | text        | |
+| `phone`      | text        | Optional |
+| `avatar_url` | text        | Optional |
+| `is_admin`   | boolean     | Default `false` |
+| `is_blocked` | boolean     | Default `false` |
+| `created_at` | timestamptz | Set automatically on sign-up |
+
+**Automatic behavior**
+- **`handle_new_user`** (trigger on `auth.users`): creates the profile row with the username and names when someone registers.
+- **`guard_profile_privileges`** (trigger on `profiles`): stops non-admins from making themselves admin or unblocking themselves.
+
+**Helper functions**
+- **`is_admin()`** / **`is_blocked()`**: return whether the current user is an admin or blocked. Used by the RLS policies of every table.
+- **`admin_search_users(search_term)`**: admin-only search by username, email or full name. It runs in the database because emails live in `auth.users`, which the browser can't read.
+
+**Row Level Security**
+- **Read:** everyone.
+- **Create:** users can create only their own profile (normally done automatically on sign-up).
+- **Update:** users can update their own profile. Admins can update any profile (for example, to block users or grant admin rights).
+
+---
+
+### `posts`
+
+A forum post written by a user.
+
+| Column       | Type        | Rules |
+|--------------|-------------|-------|
+| `id`         | uuid        | Primary key, generated automatically |
+| `author_id`  | uuid        | Required. References `profiles.id`; deleted when the profile is deleted |
+| `title`      | text        | Required. 16–64 characters |
+| `content`    | text        | Required. 32–8192 characters |
+| `created_at` | timestamptz | Set automatically when the post is created |
+| `updated_at` | timestamptz | Starts equal to `created_at`; updated automatically by a trigger on every edit |
+
+**Row Level Security**
+- **Read:** everyone, including anonymous visitors.
+- **Create:** logged-in users who are not blocked, only as themselves (`author_id` must be their own ID).
+- **Update:** users can edit only their own posts, and not while blocked. The post's author cannot be changed.
+- **Delete:** users can delete their own posts while not blocked. Admins can delete any post.
+
+---
+
+### `comments`
+
+A reply to a post.
+
+| Column       | Type        | Rules |
+|--------------|-------------|-------|
+| `id`         | uuid        | Primary key, generated automatically |
+| `post_id`    | uuid        | Required. References `posts.id`; deleted when the post is deleted |
+| `author_id`  | uuid        | Required. References `profiles.id`; deleted when the profile is deleted |
+| `content`    | text        | Required. 1–8192 characters |
+| `created_at` | timestamptz | Set automatically when the comment is created |
+| `updated_at` | timestamptz | Starts equal to `created_at`; updated automatically by a trigger on every edit |
+
+- **Column permissions:** users may only write `post_id`, `author_id` and `content` when creating a comment, and only `content` when editing one.
+
+**Row Level Security**
+- **Read:** everyone, including anonymous visitors.
+- **Create:** logged-in users who are not blocked, only as themselves.
+- **Update:** users can edit only their own comments, and not while blocked.
+- **Delete:** users can delete their own comments while not blocked. Admins can delete any comment.
+
+---
+
+### `votes`
+
+One row per vote. A user can like or dislike a post once.
+
+| Column      | Type    | Rules |
+|-------------|---------|-------|
+| `id`        | uuid    | Primary key, generated automatically |
+| `post_id`   | uuid    | Required. References `posts.id`; deleted when the post is deleted |
+| `author_id` | uuid    | Required. References `profiles.id`; deleted when the profile is deleted |
+| `rating`    | integer | Required. Only `1` (like) or `-1` (dislike) |
+
+- **One vote per user per post:** `unique (author_id, post_id)`.
+- **A post's rating** is the sum of its votes' `rating` values.
+
+**Row Level Security**
+- **Read:** everyone, including anonymous visitors.
+- **Create:** logged-in users who are not blocked, only as themselves.
+- **Update / delete:** users can change or remove only their own vote, and not while blocked.
 
 ## Team
 
