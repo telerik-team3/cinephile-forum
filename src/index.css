@@ -3,11 +3,184 @@
    what Pico cannot know: our layout inside #root, the top bar, compact buttons
    and the card look of posts, comments and admin sections. */
 
-/* Light theme: grey page with white cards. The dark theme keeps Pico's colours.
+/* Fonts are loaded in index.html. Bebas Neue has no Cyrillic letters, so
+   Bulgarian headings fall back to Oswald, a similar tall condensed font. */
+:root {
+  --pico-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --heading-font: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
+}
+
+/* Dark theme: a cinema just before the film starts. Warm near-black room,
+   marquee gold for actions, warm off-white text.
    :root is needed, otherwise Pico's own :root rule is more specific and wins. */
+:root[data-theme="dark"] {
+  --pico-background-color: #0e0d0c;
+  --pico-color: #ece6dc;
+  --pico-card-background-color: #18161a;
+  --pico-card-sectioning-background-color: #1f1c21;
+  --pico-card-box-shadow: 0 0 0 1px #2a262c, 0 8px 24px rgba(0, 0, 0, 0.45);
+  --pico-muted-color: #9a928a;
+  --pico-muted-border-color: #2e2a2f;
+  --pico-contrast: #f5efe4;
+  --pico-h1-color: #f5efe4;
+  --pico-h2-color: #f5efe4;
+  --pico-h3-color: #f5efe4;
+
+  --pico-primary: #e3b04b;
+  --pico-primary-background: #e3b04b;
+  --pico-primary-border: #e3b04b;
+  --pico-primary-underline: rgba(227, 176, 75, 0.5);
+  --pico-primary-hover: #f0c46a;
+  --pico-primary-hover-background: #f0c46a;
+  --pico-primary-hover-border: #f0c46a;
+  --pico-primary-hover-underline: #f0c46a;
+  --pico-primary-focus: rgba(227, 176, 75, 0.35);
+  --pico-primary-inverse: #1a1408;
+
+  --pico-form-element-background-color: #141215;
+  --pico-form-element-border-color: #34303a;
+  --pico-form-element-color: #ece6dc;
+  --pico-form-element-placeholder-color: #7d766f;
+  --pico-form-element-active-background-color: #141215;
+  --pico-form-element-active-border-color: #e3b04b;
+  --pico-form-element-focus-color: rgba(227, 176, 75, 0.35);
+}
+
+/* Light theme: an old cinema programme booklet. Warm cream paper instead of
+   bright white, dark brown ink, burgundy like theatre seats. */
 :root[data-theme="light"] {
-  --pico-background-color: #f4f5f7;
-  --pico-card-background-color: #ffffff;
+  --pico-background-color: #efe7da;
+  --pico-color: #2b241f;
+  --pico-card-background-color: #faf6ef;
+  --pico-card-sectioning-background-color: #f4ede2;
+  --pico-card-box-shadow: 0 0 0 1px #e1d6c4, 0 6px 18px rgba(80, 60, 30, 0.08);
+  --pico-muted-color: #6f655c;
+  --pico-muted-border-color: #dccfbc;
+  --pico-contrast: #1f1a16;
+  --pico-h1-color: #1f1a16;
+  --pico-h2-color: #1f1a16;
+  --pico-h3-color: #1f1a16;
+
+  --pico-primary: #8b2331;
+  --pico-primary-background: #8b2331;
+  --pico-primary-border: #8b2331;
+  --pico-primary-underline: rgba(139, 35, 49, 0.45);
+  --pico-primary-hover: #6e1a26;
+  --pico-primary-hover-background: #6e1a26;
+  --pico-primary-hover-border: #6e1a26;
+  --pico-primary-hover-underline: #6e1a26;
+  --pico-primary-focus: rgba(139, 35, 49, 0.3);
+  --pico-primary-inverse: #fbf6ee;
+
+  --pico-form-element-background-color: #fdfaf5;
+  --pico-form-element-border-color: #d3c5b0;
+  --pico-form-element-color: #2b241f;
+  --pico-form-element-placeholder-color: #8f8478;
+  --pico-form-element-active-background-color: #fdfaf5;
+  --pico-form-element-active-border-color: #8b2331;
+  --pico-form-element-focus-color: rgba(139, 35, 49, 0.3);
+}
+
+/* Headings in the marquee font. */
+h1,
+h2,
+h3 {
+  font-family: var(--heading-font);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Page backgrounds. The SVGs live in public/backgrounds. A cream or dark band
+   down the middle keeps the reading area plain, so the decoration only shows
+   in the side margins and never sits behind text. */
+body {
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+/* Dark: two faint film reels in opposite corners. */
+:root[data-theme="dark"] body {
+  background-color: var(--pico-background-color);
+  background-image:
+    url("/backgrounds/film-reel.svg"),
+    url("/backgrounds/film-reel.svg");
+  background-position:
+    left -200px bottom -200px,
+    right -220px top 90px;
+  background-size: 520px, 440px;
+  background-repeat: no-repeat;
+}
+
+/* Light: an old newspaper page, faded towards the middle. */
+:root[data-theme="light"] body {
+  background-color: var(--pico-background-color);
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(239, 231, 218, 0) calc(50% - 600px),
+      #efe7da calc(50% - 500px),
+      #efe7da calc(50% + 500px),
+      rgba(239, 231, 218, 0) calc(50% + 600px)
+    ),
+    url("/backgrounds/newspaper.svg");
+  background-size: auto, 360px 480px;
+}
+
+/* Wide screens have real margins, so they get the bigger decorations:
+   film strips running down both sides, and old posters on the paper. */
+@media (min-width: 1280px) {
+  :root[data-theme="dark"] body {
+    background-image:
+      url("/backgrounds/film-strip.svg"),
+      url("/backgrounds/film-strip.svg"),
+      url("/backgrounds/film-reel.svg"),
+      url("/backgrounds/film-reel.svg");
+    background-position:
+      left 32px top 0,
+      right 32px top 0,
+      left -200px bottom -200px,
+      right -220px top 90px;
+    background-size: 96px 128px, 96px 128px, 520px, 440px;
+    background-repeat: repeat-y, repeat-y, no-repeat, no-repeat;
+  }
+}
+
+@media (min-width: 1480px) {
+  :root[data-theme="light"] body {
+    background-image:
+      url("/backgrounds/poster.svg"),
+      url("/backgrounds/poster.svg"),
+      linear-gradient(
+        90deg,
+        rgba(239, 231, 218, 0) calc(50% - 600px),
+        #efe7da calc(50% - 500px),
+        #efe7da calc(50% + 500px),
+        rgba(239, 231, 218, 0) calc(50% + 600px)
+      ),
+      url("/backgrounds/newspaper.svg");
+    background-position:
+      left 48px top 140px,
+      right 48px bottom 60px,
+      0 0,
+      0 0;
+    background-size: 200px 293px, 200px 293px, auto, 360px 480px;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  }
+}
+
+/* Very faint film grain over the dark theme. pointer-events: none keeps it
+   from ever blocking clicks. */
+:root[data-theme="dark"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.05;
+  /* Pico turns off background repeat on every ::before, so turn it back on. */
+  background-repeat: repeat;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Pico centres only body > main, but our whole app lives inside #root. */
@@ -31,13 +204,18 @@
   margin-bottom: 2rem;
   padding: 0.75rem 0;
   background: var(--pico-card-background-color);
-  box-shadow: 0 0 0 100vmax var(--pico-card-background-color);
-  clip-path: inset(0 -100vmax);
+  /* The second shadow sits 2px lower than the first and peeks out as a thin
+     marquee line in the primary colour along the bottom of the bar. */
+  box-shadow:
+    0 0 0 100vmax var(--pico-card-background-color),
+    0 2px 0 100vmax var(--pico-primary);
+  clip-path: inset(0 -100vmax -2px);
 }
 
 #root > header h2 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.7rem;
+  letter-spacing: 0.08em;
   color: var(--pico-primary);
 }
 
@@ -59,7 +237,7 @@ nav a:hover {
 }
 
 h1 {
-  font-size: 1.75rem;
+  font-size: 2.4rem;
   margin-bottom: 1rem;
 }
 
@@ -120,10 +298,20 @@ select {
   --pico-color: var(--pico-primary);
 }
 
-/* Cards: Pico already draws every <article> as a card. */
+/* Cards: Pico already draws every <article> as a card.
+   Standalone cards get a soft edge in the primary colour on hover; comments
+   inside a section are rows, not cards, so they are left out. */
+article:not(section article) {
+  transition: box-shadow 0.2s ease;
+}
+
+article:not(section article):hover {
+  box-shadow: 0 0 0 1px var(--pico-primary), var(--pico-card-box-shadow);
+}
+
 article h3 {
   margin: 0 0 0.25rem;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
 }
 
 article h3 a {
@@ -156,7 +344,7 @@ section {
 }
 
 section h2 {
-  font-size: 1.25rem;
+  font-size: 1.6rem;
 }
 
 /* Comments are articles inside the comments card: flat rows, not cards. */
@@ -182,4 +370,96 @@ td {
 
 td:last-child {
   white-space: nowrap;
+}
+
+/* Vote control: a small pill holding the rating and the two vote buttons.
+   aria-pressed on each button marks the user's current vote. */
+:root[data-theme="dark"] {
+  --vote-down: #a3242f;
+  --vote-down-inverse: #fbeff0;
+}
+
+:root[data-theme="light"] {
+  --vote-down: #3d332c;
+  --vote-down-inverse: #faf6ef;
+}
+
+.vote-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0.3rem 0.35rem 0.3rem 1rem;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 999px;
+  background: var(--pico-card-sectioning-background-color);
+  font-family: var(--heading-font);
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pico-primary);
+}
+
+.vote-control button {
+  margin: 0;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-family: var(--pico-font-family);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  text-transform: none;
+  --pico-background-color: transparent;
+  --pico-border-color: var(--pico-muted-border-color);
+  --pico-color: var(--pico-primary);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.vote-control button:first-of-type::before {
+  content: "▲";
+  margin-right: 0.4rem;
+  font-size: 0.75em;
+}
+
+.vote-control button:last-of-type::before {
+  content: "▼";
+  margin-right: 0.4rem;
+  font-size: 0.75em;
+}
+
+.vote-control button:first-of-type:hover {
+  --pico-border-color: var(--pico-primary);
+  --pico-color: var(--pico-primary);
+}
+
+.vote-control button:last-of-type:hover {
+  --pico-border-color: var(--vote-down);
+  --pico-color: var(--vote-down);
+}
+
+:root[data-theme="dark"] .vote-control button:last-of-type:hover {
+  --pico-color: #e0626c;
+  --pico-border-color: #e0626c;
+}
+
+.vote-control button:first-of-type[aria-pressed="true"] {
+  --pico-background-color: var(--pico-primary);
+  --pico-border-color: var(--pico-primary);
+  --pico-color: var(--pico-primary-inverse);
+}
+
+.vote-control button:last-of-type[aria-pressed="true"] {
+  --pico-background-color: var(--vote-down);
+  --pico-border-color: var(--vote-down);
+  --pico-color: var(--vote-down-inverse);
+}
+
+.vote-control p {
+  flex-basis: 100%;
+  margin: 0.25rem 0 0;
+  font-family: var(--pico-font-family);
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--pico-del-color);
 }
