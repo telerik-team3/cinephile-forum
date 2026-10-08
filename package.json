@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+        "test": "vitest",
+    "test:security": "vitest run --config vitest.security.config.js"
+    
   },
   "dependencies": {
     "@picocss/pico": "^2.1.1",

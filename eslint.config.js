@@ -17,5 +17,12 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+   },
+  {
+    // Config files and the security tests run in Node.js, not in the browser.
+    files: ['*.config.js', 'security/**/*.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
   },
 ])
