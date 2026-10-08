@@ -5,8 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cinephile Forum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Oswald:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <script>
-      // Applies the saved theme before React loads, so a dark page does not flash white.
+      // Applies the saved theme before React loads, so the page does not flash the wrong theme.
+      // The light cinema theme is the default for first-time visitors.
       try {
         document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
       } catch {

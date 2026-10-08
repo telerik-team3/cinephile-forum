@@ -72,14 +72,14 @@ function VoteControl({ postId }) {
   }
 
   return (
-    <div>
+    <div className="vote-control">
       Rating {score}{" "}
       {!userData?.is_blocked && (
         <>
-          <button onClick={() => handleVote(1)}>
+          <button onClick={() => handleVote(1)} aria-pressed={vote === 1 ? true : false}>
             {vote === 1 ? "Liked" : "Like"}{" "}
           </button>{" "}
-          <button onClick={() => handleVote(-1)}>
+          <button onClick={() => handleVote(-1)} aria-pressed={vote === -1 ? true : false}>
             {vote === -1 ? "Disliked" : "Dislike"}{" "}
           </button>
         </>
