@@ -3,6 +3,7 @@ import { AppContext } from "../state/app.context";
 import { getProfileById } from "../services/profile.service";
 import { getPostsByAuthor } from "../services/post.service";
 import { updateProfile } from "../services/profile.service";
+import { uploadAvatar } from "../services/profile.service";
 
 function UserProfile() {
   const { user } = useContext(AppContext);
@@ -18,6 +19,8 @@ function UserProfile() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     if (profile) {
@@ -27,11 +30,20 @@ function UserProfile() {
     }
     }, [profile]);
 
-  const handleSave = () => {
-  updateProfile(user.id, firstName, lastName, phone).then((updatedProfile) => {
-    setProfile(updatedProfile);
-    setIsEditing(false);
-  });
+  const handleSave = async () => {
+    setSaveError("");
+    try {
+      // The file name never changes, so a timestamp makes the browser load the new photo.
+      const avatarUrl = avatarFile
+        ? `${await uploadAvatar(user.id, avatarFile)}?t=${Date.now()}`
+        : profile.avatar_url;
+      const updatedProfile = await updateProfile(user.id, firstName, lastName, phone, avatarUrl);
+      setProfile(updatedProfile);
+      setAvatarFile(null);
+      setIsEditing(false);
+    } catch (err) {
+      setSaveError(err.message);
+    }
   };
 
 
@@ -65,6 +77,12 @@ function UserProfile() {
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Телефон"
               />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files[0])}
+              />
+              {saveError && <p>Грешка при запазване: {saveError}</p>}
               <button onClick={handleSave}>Запази</button>
               <button onClick={() => setIsEditing(false)}>Отказ</button>
             </div>
