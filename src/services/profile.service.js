@@ -108,3 +108,15 @@ export const uploadAvatar = async (userID, file) => {
 
   return data.publicUrl;
 };
+
+
+// Computes user reputation as the sum of votes received on their posts.
+export const getUserReputation = async (userID) => {
+  const { data, error } = await supabase.rpc("get_user_reputation", { user_id: userID });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
