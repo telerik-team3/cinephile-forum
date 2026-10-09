@@ -178,13 +178,14 @@ auth.users ──1:1── profiles
 ### `profiles`
 
 Public profile data for each registered user. Login data (email, password) lives in Supabase's own `auth.users` table.
+Usernames can’t be changed after registration, enforced by column permissions
 
 | Column       | Type        | Rules |
 |--------------|-------------|-------|
 | `id`         | uuid        | Primary key. Same ID as the user's `auth.users` row; deleted when that user is deleted |
 | `username`   | text        | Unique |
-| `first_name` | text        | |
-| `last_name`  | text        | |
+| `first_name` | text        | Required. 4–32 characters |
+| `last_name`  | text        | Required. 4–32 characters |
 | `phone`      | text        | Optional |
 | `avatar_url` | text        | Optional |
 | `is_admin`   | boolean     | Default `false` |
