@@ -29,10 +29,10 @@ export const getUserCount = async () => {
 };
 
 
-export const updateProfile = async (userID, firstName, lastName, phone) => {
+export const updateProfile = async (userID, firstName, lastName, phone, avatarUrl) => {
   const { data, error } = await supabase
     .from("profiles")
-    .update({ first_name: firstName, last_name: lastName, phone })
+    .update({ first_name: firstName, last_name: lastName, phone, avatar_url: avatarUrl })
     .eq("id", userID)
     .select()
     .single();
@@ -87,4 +87,24 @@ export const setUserAdmin = async (userID, isAdmin) => {
   }
 
   return data;
+};
+
+
+// Uploads the signed-in user's avatar image and returns its public URL.
+export const uploadAvatar = async (userID, file) => {
+  const filePath = `${userID}/avatar.png`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("profile-picture-test")
+    .upload(filePath, file, { upsert: true });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { data } = supabase.storage
+    .from("profile-picture-test")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
 };

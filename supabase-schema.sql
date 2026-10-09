@@ -309,3 +309,24 @@ using (auth.uid() = author_id and not public.is_blocked());
 revoke insert, update on public.comments from anon, authenticated;
 grant insert (post_id, author_id, content) on public.comments to authenticated;
 grant update (content) on public.comments to authenticated;
+
+-- Profile photos. Each user may only write files inside a folder named after their own id.
+insert into storage.buckets (id, name, public)
+values ('profile-picture-test', 'profile-picture-test', true)
+on conflict (id) do nothing;
+
+create policy "Users can upload their own avatar"
+on storage.objects for insert to authenticated
+with check (bucket_id = 'profile-picture-test'
+  and (storage.foldername(name))[1] = auth.uid()::text);
+
+create policy "Users can replace their own avatar"
+on storage.objects for update to authenticated
+using (bucket_id = 'profile-picture-test'
+  and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- upsert also reads the existing file, so the owner needs a select policy too.
+create policy "Users can read their own avatar"
+on storage.objects for select to authenticated
+using (bucket_id = 'profile-picture-test'
+  and (storage.foldername(name))[1] = auth.uid()::text);
