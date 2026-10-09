@@ -33,6 +33,15 @@ function UserProfile() {
 
   const handleSave = async () => {
     setSaveError("");
+
+    if (firstName.trim().length < 4 || firstName.trim().length > 32) {
+      setSaveError('First name must be between 4 and 32 characters');
+      return;
+    } 
+    if (lastName.trim().length < 4 || lastName.trim().length > 32 ) {
+      setSaveError('Last name must be between 4 and 32 characters');
+      return;
+    }
     try {
       // The file name never changes, so a timestamp makes the browser load the new photo.
       const avatarUrl = avatarFile

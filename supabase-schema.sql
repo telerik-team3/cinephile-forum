@@ -15,6 +15,19 @@ create table public.profiles (
   created_at timestamp with time zone default now()
 );
 
+alter table public.profiles 
+  alter column first_name set not null,
+  alter column last_name set not null,
+
+
+  add constraint profiles_first_name_length_check
+   check (char_length(btrim(first_name)) between 4 and 32),
+
+   add constraint profiles_last_name_length_check
+   check (char_length(btrim(last_name)) between 4 and 32);
+
+  
+
 -- Row Level Security
 alter table public.profiles enable row level security;
 

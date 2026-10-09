@@ -13,6 +13,15 @@ function Register() {
   function handleSubmit(e) {
     e.preventDefault();
 
+    if (firstName.trim().length < 4 || firstName.trim().length > 32) {
+      alert("First name must be between 4 and 32 characters");
+      return;
+    }
+    if (lastName.trim().length < 4 || lastName.trim().length > 32) {
+      alert("Last name must be between 4 and 32 characters");
+      return;
+    }
+
     registerUser(email, password, username, firstName, lastName)
       .then(() => navigate("/feed"))
       .catch((error) => alert(error.message));
