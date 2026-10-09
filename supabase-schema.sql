@@ -344,6 +344,13 @@ on storage.objects for select to authenticated
 using (bucket_id = 'profile-picture-test'
   and (storage.foldername(name))[1] = auth.uid()::text);
 
+-- Usernames cannot change after registration, so users may only update their
+-- names, phone and photo. is_admin and is_blocked are granted too, because the
+-- admin dashboard updates them; guard_profile_privileges still allows only
+-- admins to change them. Profiles are created by handle_new_user, never directly.
+revoke insert, update on public.profiles from anon, authenticated;
+grant update (first_name, last_name, phone, avatar_url, is_admin, is_blocked) on public.profiles to authenticated;
+
 
 
 create or replace function public.get_user_reputation(user_id uuid)
