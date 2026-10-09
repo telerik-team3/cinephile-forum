@@ -330,3 +330,17 @@ create policy "Users can read their own avatar"
 on storage.objects for select to authenticated
 using (bucket_id = 'profile-picture-test'
   and (storage.foldername(name))[1] = auth.uid()::text);
+
+
+
+create or replace function public.get_user_reputation(user_id uuid)
+returns integer
+language sql
+stable
+set search_path = public
+as $$
+  select coalesce(sum(v.rating), 0)::integer
+  from public.votes v
+  join public.posts p on p.id = v.post_id
+  where p.author_id = user_id;
+$$;
