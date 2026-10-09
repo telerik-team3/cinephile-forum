@@ -1,6 +1,7 @@
 import { describe, it, vi, expect } from "vitest";
 import { searchUsers, setUserBlocked, setUserAdmin } from "./profile.service";
 import { supabase } from "../config/supabase-config";
+import { updateProfile } from "./profile.service";
 
 vi.mock(import("../config/supabase-config"), () => {
   return {
@@ -91,5 +92,41 @@ describe("Block and admin rights tests", () => {
     await setUserAdmin("u1", false);
 
     expect(obj.update).toHaveBeenCalledWith({ is_admin: false });
+  });
+});
+
+
+describe("Profile editing tests", () => {
+  it("updateProfile should update names, phone and avatar, and return the new profile", async () => {
+    const updated = {
+      id: "u1",
+      username: "andro",
+      first_name: "Andro",
+      last_name: "Atanasov",
+      phone: "0899999999",
+      avatar_url: "https://example.com/avatar.png",
+    };
+    const obj = mockUpdate({ data: updated, error: null });
+
+    const result = await updateProfile("u1", "Andro", "Atanasov", "0899999999", "https://example.com/avatar.png");
+
+    expect(result).toEqual(updated);
+    expect(obj.update).toHaveBeenCalledWith({
+      first_name: "Andro",
+      last_name: "Atanasov",
+      phone: "0899999999",
+      avatar_url: "https://example.com/avatar.png",
+    });
+    expect(obj.eq).toHaveBeenCalledWith("id", "u1");
+  });
+
+  it("updateProfile should never send the username, since it is not accepted as a parameter", async () => {
+    const obj = mockUpdate({ data: { id: "u1", username: "andro" }, error: null });
+
+    await updateProfile("u1", "Andro", "Atanasov", "0899999999", null);
+
+    expect(obj.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({ username: expect.anything() })
+    );
   });
 });
