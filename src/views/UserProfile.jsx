@@ -4,6 +4,7 @@ import { getProfileById } from "../services/profile.service";
 import { getPostsByAuthor } from "../services/post.service";
 import { updateProfile } from "../services/profile.service";
 import { uploadAvatar } from "../services/profile.service";
+import BadgeList from "../components/BadgeList";
 
 function UserProfile() {
   const { user } = useContext(AppContext);
@@ -105,6 +106,8 @@ function UserProfile() {
               <button onClick={startEditing}>Редактирай</button>
             </div>
           )}
+
+          <BadgeList userId={profile.id} />
 
           <h2>Моите постове</h2>
           <ul>
