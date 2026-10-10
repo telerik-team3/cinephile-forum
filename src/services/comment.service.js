@@ -60,3 +60,17 @@ export const deleteComment = async (commentID) => {
     throw error;
   }
 };
+
+export const getCommentsByAuthor = async (authorID) => {
+  const { data, error } = await supabase
+  .from('comments')
+  .select('*, post:posts(id, title)')
+  .eq('author_id', authorID)
+  .order('created_at', {ascending: false})
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}

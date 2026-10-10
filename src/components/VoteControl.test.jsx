@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AppContext } from "../state/app.context";
-import VoteControl from "../components/VoteControl";
+import VoteControl from "./VoteControl";
 
 vi.mock(import("../config/supabase-config"), () => {
   return {
