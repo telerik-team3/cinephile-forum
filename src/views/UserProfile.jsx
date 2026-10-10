@@ -8,6 +8,8 @@ import { useParams } from "react-router-dom";
 import { getRating, sortPosts } from "../lib/posts.lib";
 import { Link } from "react-router-dom";
 import { getCommentsByAuthor } from "../services/comment.service";
+import BadgeList from "../components/BadgeList";
+
 
 function UserProfile() {
   const { user } = useContext(AppContext);
@@ -137,7 +139,7 @@ function UserProfile() {
               )}
             </div>
           )}
-
+          <BadgeList userId={profileID} />
           {profileID === user.id ? (
             <h2>My posts</h2>
           ) : (

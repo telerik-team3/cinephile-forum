@@ -350,8 +350,6 @@ using (bucket_id = 'profile-picture-test'
 revoke insert, update on public.profiles from anon, authenticated;
 grant update (first_name, last_name, phone, avatar_url, is_admin, is_blocked) on public.profiles to authenticated;
 
-
-
 create or replace function public.get_user_reputation(user_id uuid)
 returns integer
 language sql
@@ -362,4 +360,24 @@ as $$
   from public.votes v
   join public.posts p on p.id = v.post_id
   where p.author_id = user_id;
+$$;
+
+-- Badges (#47). Nothing is stored: the numbers behind every badge are counted
+-- on demand, so a badge can never be out of date or faked.
+create or replace function public.get_badge_stats(target_user uuid)
+returns table (
+  post_count integer,
+  comment_count integer,
+  reputation integer,
+  member_since timestamp with time zone
+)
+language sql
+stable
+set search_path = public
+as $$
+  select
+    (select count(*) from posts where author_id = target_user)::integer,
+    (select count(*) from comments where author_id = target_user)::integer,
+    public.get_user_reputation(target_user),
+    (select created_at from profiles where id = target_user);
 $$;
