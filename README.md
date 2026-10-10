@@ -2,7 +2,7 @@
 
 A community forum for movie lovers, built as a Forum Management System. People share posts about films, reply to each other, and upvote or downvote the content they like or dislike the most. The frontend is built with **React**, and authentication, data, and file storage are handled by **Supabase**.
 
-> **Status:** planning. Work is tracked as [GitHub Issues](https://github.com/telerik-team3/cinephile-forum/issues) grouped into [milestones](https://github.com/telerik-team3/cinephile-forum/milestones) M1–M7 (see [Roadmap](#roadmap)).
+> **Status:** deployed. Work is tracked as [GitHub Issues](https://github.com/telerik-team3/cinephile-forum/issues) grouped into [milestones](https://github.com/telerik-team3/cinephile-forum/milestones) M1–M7 (see [Roadmap](#roadmap)).
 
 ## About the project
 
@@ -86,7 +86,9 @@ Supabase handles all authentication. All data is stored in Supabase's PostgreSQL
 
 ## Live demo
 
-_A link will be added once the application is deployed._
+https://cinephile-forum.netlify.app/
+
+- Hosted on Netlify and redeploys automatically from main, so the live site always matches the repo.
 
 
 ## Getting started
