@@ -1,7 +1,7 @@
 // Users must be able to view a single post
 
 import { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { deletePost, getPostById, updatePost } from "../services/post.service";
 import CommentThread from "../components/CommentThread";
 import { AppContext } from "../state/app.context";
@@ -116,7 +116,7 @@ function SinglePost() {
           <article>
             <h1>{post.title}</h1>
             <small>
-              by {post.author.username} on{" "}
+              by <Link to={`/profile/${post.author_id}`}>{post.author.username}</Link> on{" "}
               {new Date(post.created_at).toLocaleDateString()}
               {post.updated_at !== post.created_at && " (edited)"}
             </small>

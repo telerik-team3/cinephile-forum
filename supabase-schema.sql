@@ -1,7 +1,6 @@
 -- Database schema for Cinephile Forum
 
 -- Profiles table
--- ВАЖНО: Да не забравим да сложим контрола за username, first_name, last_name - not null
 
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,

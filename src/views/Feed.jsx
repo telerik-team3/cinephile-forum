@@ -70,7 +70,7 @@ function Feed() {
           <Link to={`/posts/${p.id}`}>{p.title}</Link>
         </h3>
         <small>
-          by {p.author.username} · {new Date(p.created_at).toLocaleDateString()} ·{" "}
+          by <Link to={`/profile/${p.author_id}`}>{p.author.username}</Link> · {new Date(p.created_at).toLocaleDateString()} ·{" "}
           {p.comments[0].count} comment(s) · Rating {getRating(p)}
         </small>
         <p>{p.content.length > 150 ? `${p.content.slice(0, 150)}…` : p.content}</p>

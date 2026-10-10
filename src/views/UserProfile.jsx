@@ -4,18 +4,30 @@ import { getProfileById } from "../services/profile.service";
 import { getPostsByAuthor } from "../services/post.service";
 import { updateProfile } from "../services/profile.service";
 import { uploadAvatar } from "../services/profile.service";
+import { useParams } from "react-router-dom";
+import { getRating, sortPosts } from "../lib/posts.lib";
+import { Link } from "react-router-dom";
+import { getCommentsByAuthor } from "../services/comment.service";
 import BadgeList from "../components/BadgeList";
+
 
 function UserProfile() {
   const { user } = useContext(AppContext);
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const { id } = useParams();
+  const profileID = id ?? user.id;
+  const [comments, setComments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [sortComments, setSortComments] = useState("newest");
 
   useEffect(() => {
-    getProfileById(user.id).then((data) => setProfile(data));
-    getPostsByAuthor(user.id).then((data) => setPosts(data));
-  }, [user.id]);
+    getProfileById(profileID).then((data) => setProfile(data));
+    getPostsByAuthor(profileID).then((data) => setPosts(data));
+    getCommentsByAuthor(profileID).then((data) => setComments(data));
+  }, [profileID]);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,16 +43,15 @@ function UserProfile() {
     setIsEditing(true);
   }
 
-
   const handleSave = async () => {
     setSaveError("");
 
     if (firstName.trim().length < 4 || firstName.trim().length > 32) {
-      setSaveError('First name must be between 4 and 32 characters');
+      setSaveError("First name must be between 4 and 32 characters");
       return;
-    } 
-    if (lastName.trim().length < 4 || lastName.trim().length > 32 ) {
-      setSaveError('Last name must be between 4 and 32 characters');
+    }
+    if (lastName.trim().length < 4 || lastName.trim().length > 32) {
+      setSaveError("Last name must be between 4 and 32 characters");
       return;
     }
     try {
@@ -48,7 +59,13 @@ function UserProfile() {
       const avatarUrl = avatarFile
         ? `${await uploadAvatar(user.id, avatarFile)}?t=${Date.now()}`
         : profile.avatar_url;
-      const updatedProfile = await updateProfile(user.id, firstName, lastName, phone, avatarUrl);
+      const updatedProfile = await updateProfile(
+        user.id,
+        firstName,
+        lastName,
+        phone,
+        avatarUrl,
+      );
       setProfile(updatedProfile);
       setAvatarFile(null);
       setIsEditing(false);
@@ -57,70 +74,131 @@ function UserProfile() {
     }
   };
 
+  const filtered = posts.filter((p) => {
+    return (
+      p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.content.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const sorted =
+    sort === "oldest" ? filtered.slice().reverse() : sortPosts(filtered, sort);
+
+  const sortedComments =
+    sortComments === "oldest" ? comments.slice().reverse() : comments;
+
+
 
   return (
     <div>
-      <h1>Профил</h1>
+      <h1>Profile</h1>
       {profile ? (
         <>
           {profile.avatar_url && (
-            <img src={profile.avatar_url} alt="Профилна снимка" width="100" />
+            <img src={profile.avatar_url} alt="Avatar" width="100" />
           )}
 
           {isEditing ? (
             <div>
-              <p>Потребителско име: {profile.username} (не може да се променя)</p>
+              <p>Username: {profile.username} (cannot be changed)</p>
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="Име"
+                placeholder="First name"
               />
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                placeholder="Фамилия"
+                placeholder="Last name"
               />
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="Телефон"
+                placeholder="Phone"
               />
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setAvatarFile(e.target.files[0])}
               />
-              {saveError && <p>Грешка при запазване: {saveError}</p>}
-              <button onClick={handleSave}>Запази</button>
-              <button onClick={() => setIsEditing(false)}>Отказ</button>
+              {saveError && <p>Error: {saveError}</p>}
+              <button onClick={handleSave}>Save</button>
+              <button onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
           ) : (
             <div>
               <p>
                 {profile.username} — {profile.first_name} {profile.last_name}
               </p>
-              {profile.phone && <p>Телефон: {profile.phone}</p>}
-              <button onClick={startEditing}>Редактирай</button>
+              {profile.phone && <p>Phone: {profile.phone}</p>}
+              {profileID === user.id && (
+                <button onClick={startEditing}>Edit</button>
+              )}
             </div>
           )}
+          <BadgeList userId={profileID} />
+          {profileID === user.id ? (
+            <h2>My posts</h2>
+          ) : (
+            <h2>{profile.username}'s posts</h2>
+          )}
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search..."
+          />
+          <select value={sort} onChange={(e) => setSort(e.target.value)}>
+            <option value={"newest"}>Newest</option>
+            <option value={"oldest"}>Oldest</option>
+            <option value={"most-comments"}>Most comments</option>
+            <option value={"most-liked"}>Most liked</option>
+          </select>
+          {sorted.length > 0 ? (
+            <ul>
+              {sorted.map((post) => (
+                <li key={post.id}>
+                  <Link to={`/posts/${post.id}`}>{post.title}</Link>{" "}
+                  {post.comments[0].count} comment(s) , Rating {getRating(post)}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No posts found</p>
+          )}
 
-          <BadgeList userId={profile.id} />
-
-          <h2>Моите постове</h2>
-          <ul>
-            {posts.map((post) => (
-              <li key={post.id}>{post.title}</li>
-            ))}
-          </ul>
+          {profileID === user.id ? (
+            <h3>My comments</h3>
+          ) : (
+            <h3>{profile.username}'s comments</h3>
+          )}
+          <select
+            value={sortComments}
+            onChange={(e) => setSortComments(e.target.value)}
+          >
+            <option value={"newest"}>Newest</option>
+            <option value={"oldest"}>Oldest</option>
+          </select>
+          {sortedComments.length > 0 ? (
+            <ul>
+              {sortedComments.map((c) => (
+                <li key={c.id}>
+                  <Link to={`/posts/${c.post.id}`}>{c.post.title}</Link>{" "}
+                  {c.content} {new Date(c.created_at).toLocaleDateString()}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No comments found</p>
+          )}
         </>
       ) : (
-        <p>Зареждане...</p>
+        <p>Loading...</p>
       )}
     </div>
   );
-  }
+}
 
 export default UserProfile;

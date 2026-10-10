@@ -94,6 +94,7 @@ useEffect(() => {
           <Route path="/feed" element={<Authenticated><Feed /></Authenticated>} />
           <Route path="/posts/:id" element={<Authenticated><SinglePost /></Authenticated>} />
           <Route path="/create-post" element={<Authenticated><CreatePost /></Authenticated>} />
+          <Route path="/profile/:id" element={<Authenticated><UserProfile /></Authenticated>} />
           <Route path="/profile" element={<Authenticated><UserProfile /></Authenticated>} />
           <Route path="/admin" element={<AdminOnly><Admin /></AdminOnly>} />
           <Route path="*" element={<NotFound />} />
