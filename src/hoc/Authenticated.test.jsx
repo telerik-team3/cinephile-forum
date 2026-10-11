@@ -32,7 +32,7 @@ describe("Authenticated route guard tests", () => {
   it("should wait while the session is loading", () => {
     const html = renderAs({ user: null, loading: true });
 
-    expect(html).toContain("Зареждане");
+    expect(html).toContain("Loading");
     expect(html).not.toContain("Protected content");
   });
 });

@@ -25,10 +25,10 @@ function Login() {
 
   return (
     <div>
-      <h1>Вход</h1>
+      <h1>Log in</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Имейл
+          Email
           <input
             type="text"
             value={email}
@@ -36,14 +36,14 @@ function Login() {
           />
         </label>
         <label>
-          Парола
+          Password
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        <button>Вход</button>
+        <button>Log in</button>
       </form>
     </div>
   );

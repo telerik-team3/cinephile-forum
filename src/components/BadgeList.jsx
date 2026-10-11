@@ -24,20 +24,20 @@ function BadgeList({ userId }) {
   }, [userId]);
 
   if (error) {
-    return <p>Значките не могат да се заредят: {error}</p>;
+    return <p>Could not load the badges: {error}</p>;
   }
 
   if (!stats) {
-    return <p>Зареждане на значките...</p>;
+    return <p>Loading badges...</p>;
   }
 
   const badges = getBadges(stats);
 
   return (
     <section className="badge-card">
-      <h2>Значки</h2>
+      <h2>Badges</h2>
       {badges.length === 0 ? (
-        <p>Още няма спечелени значки.</p>
+        <p>No badges earned yet.</p>
       ) : (
         <ul className="badges">
           {badges.map((badge) => (

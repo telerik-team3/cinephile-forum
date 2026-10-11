@@ -29,10 +29,10 @@ function Register() {
 
   return (
     <div>
-      <h1>Регистрация</h1>
+      <h1>Register</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Имейл
+          Email
           <input
             type="email"
             value={email}
@@ -40,7 +40,7 @@ function Register() {
           />
         </label>
         <label>
-          Парола
+          Password
           <input
             type="password"
             value={password}
@@ -48,27 +48,27 @@ function Register() {
           />
         </label>
         <label>
-          Потребителско име
+          Username
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </label>
         <label>
-          Име
+          First name
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
         </label>
         <label>
-          Фамилия
+          Last name
           <input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
         </label>
-        <button>Регистрация</button>
+        <button>Register</button>
       </form>
     </div>
   );

@@ -26,23 +26,23 @@ function Header() {
     <header>
       <h2>Cinephile Forum</h2>
       <nav>
-        <Link to="/">Начало</Link>
-        <Link to="/feed">Постове</Link>
-        <Link to="/create-post">Нов пост</Link>
-        <Link to="/profile">Профил</Link>
-        {userData?.is_admin && <Link to="/admin">Админ</Link>}
+        <Link to="/">Home</Link>
+        <Link to="/feed">Posts</Link>
+        <Link to="/create-post">New post</Link>
+        <Link to="/profile">Profile</Link>
+        {userData?.is_admin && <Link to="/admin">Admin</Link>}
         {user ? (
-          <button onClick={logoutUser}>Изход</button>
+          <button onClick={logoutUser}>Log out</button>
         ) : (
           <>
-            <Link to="/login">Вход</Link>
-            <Link to="/register">Регистрация</Link>
+            <Link to="/login">Log in</Link>
+            <Link to="/register">Register</Link>
           </>
         )}
         <button
           onClick={toggleTheme}
-          aria-label={theme === "dark" ? "Светла тема" : "Тъмна тема"}
-          title={theme === "dark" ? "Светла тема" : "Тъмна тема"}
+          aria-label={theme === "dark" ? "Light theme" : "Dark theme"}
+          title={theme === "dark" ? "Light theme" : "Dark theme"}
         >
           {theme === "dark" ? "☀" : "☾"}
         </button>

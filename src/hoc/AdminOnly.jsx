@@ -10,7 +10,7 @@ function AdminOnly({ children }) {
 
   // The profile carries the admin flag, so wait for it before deciding.
   if (loading) {
-    return <p>Зареждане…</p>;
+    return <p>Loading…</p>;
   }
 
   if (!user) {

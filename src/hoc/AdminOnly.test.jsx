@@ -39,7 +39,7 @@ describe("Admin access tests", () => {
   it("should wait while the profile is loading", () => {
     const html = renderAs({ user: { id: "u1" }, userData: null, loading: true });
 
-    expect(html).toContain("Зареждане");
+    expect(html).toContain("Loading");
     expect(html).not.toContain("Admin dashboard");
   });
 });

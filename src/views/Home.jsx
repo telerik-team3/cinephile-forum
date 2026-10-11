@@ -24,22 +24,22 @@ function Home() {
     <div>
       <h1>Cinephile Forum</h1>
       <p>
-        Форум за филми. Пишете постове, коментирайте, гласувайте за любимите
-        си теми и следете какво обсъждат други зрители.
+        A forum for movie lovers. Write posts, comment, vote for your favourite
+        topics and follow what other viewers are talking about.
       </p>
 
       <ul>
-        <li>Публикувайте собствени постове за филми</li>
-        <li>Коментирайте и гласувайте за чужди постове</li>
-        <li>Следете най- новите и най- коментираните теми</li>
+        <li>Publish your own posts about films</li>
+        <li>Comment on and vote for other people's posts</li>
+        <li>Follow the newest and most commented topics</li>
       </ul>
 
       <p>
-        {userCount} потребители · {postCount} постове
+        {userCount} users · {postCount} posts
       </p>
 
 
-      <h2>Най- нови постове</h2>
+      <h2>Newest posts</h2>
       <ul>
         {newestPosts.map((post) => (
           <li key={post.id}>{post.title}</li>
@@ -47,11 +47,11 @@ function Home() {
       </ul>
 
 
-      <h2>Най- коментирани постове</h2>
+      <h2>Most commented posts</h2>
       <ul>
         {mostCommentedPosts.map((post) => (
           <li key={post.id}>
-            {post.title} ({post.comments[0].count} коментара)
+            {post.title} ({post.comments[0].count} comments)
           </li>
         ))}
       </ul>
@@ -60,11 +60,11 @@ function Home() {
       {/* role="button" makes Pico draw these links as buttons. */}
       <p>
         {user ? (
-          <Link to="/feed" role="button">Към форума</Link>
+          <Link to="/feed" role="button">Go to the forum</Link>
         ) : (
           <>
-            <Link to="/login" role="button">Вход</Link>
-            <Link to="/register" role="button">Регистрация</Link>
+            <Link to="/login" role="button">Log in</Link>
+            <Link to="/register" role="button">Register</Link>
           </>
         )}
       </p>

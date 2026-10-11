@@ -10,7 +10,7 @@ function Authenticated({ children }) {
 
   // Until the session is known, a signed-in user would be mistaken for a visitor.
   if (loading) {
-    return <p>Зареждане…</p>;
+    return <p>Loading…</p>;
   }
 
   // The login page can send the user back here once it is built.
