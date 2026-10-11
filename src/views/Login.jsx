@@ -12,6 +12,12 @@ function Login() {
   function handleSubmit(e) {
     e.preventDefault();
 
+
+  if (!email.includes("@")) {
+    alert("Please log in with your email, not your username.");
+    return;
+  }
+
     loginUser(email, password)
       .then(() => navigate("/feed"))
       .catch((error) => alert(error.message));
