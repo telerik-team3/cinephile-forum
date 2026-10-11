@@ -9,6 +9,7 @@ import { getRating, sortPosts } from "../lib/posts.lib";
 import { Link } from "react-router-dom";
 import { getCommentsByAuthor } from "../services/comment.service";
 import BadgeList from "../components/BadgeList";
+import { getUserReputation } from "../services/profile.service";
 
 
 function UserProfile() {
@@ -22,11 +23,13 @@ function UserProfile() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sort, setSort] = useState("newest");
   const [sortComments, setSortComments] = useState("newest");
+  const [reputation, setReputation] = useState(0);
 
   useEffect(() => {
     getProfileById(profileID).then((data) => setProfile(data));
     getPostsByAuthor(profileID).then((data) => setPosts(data));
     getCommentsByAuthor(profileID).then((data) => setComments(data));
+    getUserReputation(profileID).then((data) => setReputation(data));
   }, [profileID]);
 
   const [firstName, setFirstName] = useState("");
@@ -34,6 +37,7 @@ function UserProfile() {
   const [phone, setPhone] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
   const [saveError, setSaveError] = useState("");
+  
 
   // Fill the form with the saved profile each time editing starts.
   function startEditing() {
@@ -140,6 +144,7 @@ function UserProfile() {
             </div>
           )}
           <BadgeList userId={profileID} />
+          <p>Reputation: {reputation}</p>
           {profileID === user.id ? (
             <h2>My posts</h2>
           ) : (
