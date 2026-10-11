@@ -135,7 +135,9 @@ export const getMostCommentedPosts = async () => {
     throw error;
   }
 
-  const sorted = [...data].sort(
+  const withComments = data.filter((p) => p.comments[0].count > 0);
+
+  const sorted = withComments.sort(
     (a, b) => b.comments[0].count - a.comments[0].count
   );
 
