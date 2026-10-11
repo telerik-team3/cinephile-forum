@@ -357,7 +357,7 @@ section article {
 }
 
 /* Tables: a bit denser so the admin table fits, no grey cells, and the action
-   buttons stay on one line. */
+   buttons never break in the middle. */
 table {
   font-size: 0.9rem;
 }
@@ -368,8 +368,10 @@ td {
   background: transparent;
 }
 
-td:last-child {
+/* The buttons may move to a second line, but a single button never breaks. */
+td button {
   white-space: nowrap;
+  margin-bottom: 0.25rem;
 }
 
 /* Vote control: a small pill holding the rating and the two vote buttons.
