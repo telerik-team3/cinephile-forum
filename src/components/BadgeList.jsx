@@ -34,7 +34,7 @@ function BadgeList({ userId }) {
   const badges = getBadges(stats);
 
   return (
-    <section>
+    <section className="badge-card">
       <h2>Значки</h2>
       {badges.length === 0 ? (
         <p>Още няма спечелени значки.</p>

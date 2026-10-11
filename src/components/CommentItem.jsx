@@ -87,7 +87,7 @@ function CommentItem({ comment, onUpdated, onDeleted }) {
   return (
     <article>
       <small>
-        {comment.author.username} on {new Date(comment.created_at).toLocaleString()}
+        {comment.author?.username ?? "Unknown user"} on {new Date(comment.created_at).toLocaleString()}
         {comment.updated_at !== comment.created_at && " (edited)"}
       </small>
       {editing ? (

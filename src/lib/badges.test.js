@@ -51,4 +51,9 @@ describe("getBadges", () => {
     const stats = { ...newUser, member_since: "2025-10-09T12:00:00Z" };
     expect(ids(getBadges(stats, NOW))).toEqual(["one-month", "one-year"]);
   });
+
+  it("gives no time badges when the registration date is missing", () => {
+    const stats = { ...newUser, member_since: null };
+    expect(getBadges(stats, NOW)).toEqual([]);
+  });
 });

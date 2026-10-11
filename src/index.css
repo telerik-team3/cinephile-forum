@@ -484,3 +484,8 @@ td button {
   font-size: 0.9rem;
   cursor: default;
 }
+
+/* Space between the badges card and the profile details or Edit button above it. */
+.badge-card {
+  margin-top: 1.5rem;
+}

@@ -3,7 +3,9 @@
 
 const DAY = 24 * 60 * 60 * 1000;
 
-const daysSince = (date, now) => (now - new Date(date)) / DAY;
+// Without a date (an unknown user) no time has passed. new Date(null) would
+// mean 1970 and award both time badges.
+const daysSince = (date, now) => (date ? (now - new Date(date)) / DAY : 0);
 
 export const BADGES = [
   {
