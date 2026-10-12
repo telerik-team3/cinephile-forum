@@ -12,14 +12,59 @@ function Home() {
   const [postCount, setPostCount] = useState(0);
   const [newestPosts, setNewestPosts] = useState([]);
   const [mostCommentedPosts, setMostCommentedPosts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUserCount().then((count) => setUserCount(count));
-    getPostCount().then((count) => setPostCount(count));
-    getNewestPosts().then((posts) => setNewestPosts(posts));
-    getMostCommentedPosts().then((posts) => setMostCommentedPosts(posts));
-    }, []);      
-    
+    let active = true;
+    Promise.allSettled([
+      getUserCount()
+        .then((count) => {
+          if (active) setUserCount(count);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+
+      getPostCount()
+        .then((count) => {
+          if (active) setPostCount(count);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+
+      getNewestPosts()
+        .then((posts) => {
+          if (active) setNewestPosts(posts);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+
+      getMostCommentedPosts()
+        .then((posts) => {
+          if (active) setMostCommentedPosts(posts);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+    ]).then(() => {
+      if (active) setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+   if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <div>
       <h1>Cinephile Forum</h1>
@@ -38,33 +83,39 @@ function Home() {
         {userCount} users · {postCount} posts
       </p>
 
-
       <h2>Newest posts</h2>
       <ul>
         {newestPosts.map((post) => (
-          <li key={post.id}>{post.title}</li>
+          <li key={post.id}>
+            <Link to={`/posts/${post.id}`}>{post.title}</Link>
+          </li>
         ))}
       </ul>
-
 
       <h2>Most commented posts</h2>
       <ul>
         {mostCommentedPosts.map((post) => (
           <li key={post.id}>
-            {post.title} ({post.comments[0].count} comments)
+            <Link to={`/posts/${post.id}`}>{post.title}</Link> (
+            {post.comments[0].count} comments)
           </li>
         ))}
       </ul>
 
-
       {/* role="button" makes Pico draw these links as buttons. */}
       <p>
         {user ? (
-          <Link to="/feed" role="button">Go to the forum</Link>
+          <Link to="/feed" role="button">
+            Go to the forum
+          </Link>
         ) : (
           <>
-            <Link to="/login" role="button">Log in</Link>
-            <Link to="/register" role="button">Register</Link>
+            <Link to="/login" role="button">
+              Log in
+            </Link>
+            <Link to="/register" role="button">
+              Register
+            </Link>
           </>
         )}
       </p>

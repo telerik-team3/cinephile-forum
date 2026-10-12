@@ -11,7 +11,6 @@ import { getCommentsByAuthor } from "../services/comment.service";
 import BadgeList from "../components/BadgeList";
 import { getUserReputation } from "../services/profile.service";
 
-
 function UserProfile() {
   const { user } = useContext(AppContext);
   const [profile, setProfile] = useState(null);
@@ -24,19 +23,61 @@ function UserProfile() {
   const [sort, setSort] = useState("newest");
   const [sortComments, setSortComments] = useState("newest");
   const [reputation, setReputation] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getProfileById(profileID).then((data) => setProfile(data));
-    getPostsByAuthor(profileID).then((data) => setPosts(data));
-    getCommentsByAuthor(profileID).then((data) => setComments(data));
-    getUserReputation(profileID).then((data) => setReputation(data));
+    let active = true;
+
+    Promise.allSettled([
+      getProfileById(profileID)
+        .then((data) => {
+          if (active) setProfile(data);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+
+      getPostsByAuthor(profileID)
+        .then((data) => {
+          if (active) setPosts(data);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+
+      getCommentsByAuthor(profileID)
+        .then((data) => {
+          if (active) setComments(data);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+
+      getUserReputation(profileID)
+        .then((data) => {
+          if (active) setReputation(data);
+        })
+        .catch((e) => {
+          if (active) setError(e.message);
+        }),
+    ]).then(() => {
+      if (active) setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [profileID]);
+
+
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
   const [saveError, setSaveError] = useState("");
+
   
 
   // Fill the form with the saved profile each time editing starts.
@@ -92,6 +133,12 @@ function UserProfile() {
     sortComments === "oldest" ? comments.slice().reverse() : comments;
 
 
+      if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div>
@@ -99,35 +146,54 @@ function UserProfile() {
       {profile ? (
         <>
           {profile.avatar_url && (
-            <img src={profile.avatar_url} alt="Avatar" width="100" />
+            <img
+              src={profile.avatar_url}
+              alt={`${profile.username}'s profile picture`}
+              width="100"
+            />
           )}
 
           {isEditing ? (
             <div>
               <p>Username: {profile.username} (cannot be changed)</p>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="First name"
-              />
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Last name"
-              />
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Phone"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setAvatarFile(e.target.files[0])}
-              />
+              <label>
+                First name
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="First name"
+                />
+              </label>
+
+              <label>
+                Last name
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Last name"
+                />
+              </label>
+
+              <label>
+                Phone
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Phone"
+                />
+              </label>
+
+              <label>
+                Avatar
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setAvatarFile(e.target.files[0])}
+                />
+              </label>
               {saveError && <p>Error: {saveError}</p>}
               <button onClick={handleSave}>Save</button>
               <button onClick={() => setIsEditing(false)}>Cancel</button>
@@ -150,17 +216,23 @@ function UserProfile() {
           ) : (
             <h2>{profile.username}'s posts</h2>
           )}
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search..."
-          />
-          <select value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value={"newest"}>Newest</option>
-            <option value={"oldest"}>Oldest</option>
-            <option value={"most-comments"}>Most comments</option>
-            <option value={"most-liked"}>Most liked</option>
-          </select>
+          <label>
+            Search posts
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search..."
+            />
+          </label>
+          <label>
+            Sort by
+            <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value={"newest"}>Newest</option>
+              <option value={"oldest"}>Oldest</option>
+              <option value={"most-comments"}>Most comments</option>
+              <option value={"most-liked"}>Most liked</option>
+            </select>
+          </label>
           {sorted.length > 0 ? (
             <ul>
               {sorted.map((post) => (
@@ -175,17 +247,20 @@ function UserProfile() {
           )}
 
           {profileID === user.id ? (
-            <h3>My comments</h3>
+            <h2>My comments</h2>
           ) : (
-            <h3>{profile.username}'s comments</h3>
+            <h2>{profile.username}'s comments</h2>
           )}
-          <select
-            value={sortComments}
-            onChange={(e) => setSortComments(e.target.value)}
-          >
-            <option value={"newest"}>Newest</option>
-            <option value={"oldest"}>Oldest</option>
-          </select>
+          <label>
+            Sort comments by
+            <select
+              value={sortComments}
+              onChange={(e) => setSortComments(e.target.value)}
+            >
+              <option value={"newest"}>Newest</option>
+              <option value={"oldest"}>Oldest</option>
+            </select>
+          </label>
           {sortedComments.length > 0 ? (
             <ul>
               {sortedComments.map((c) => (

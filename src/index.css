@@ -504,8 +504,8 @@ td button {
 /* ------------------------------------------------------------------------
    Page polish. These rules only use the markup the pages already have, so
    no component had to change. Each page is picked out by its shape with
-   :has(), for example the profile page is the only one with a search input
-   followed directly by a sort dropdown.
+   :has(), for example the profile page is the only one with two labelled
+   fields in a row (search, then a sort dropdown).
    ------------------------------------------------------------------------ */
 
 /* A slightly thicker focus ring on every form field and button. */
@@ -522,7 +522,7 @@ td button {
 /* Loading, empty and error messages: a quiet dashed box instead of loose text.
    #root > p is the "Loading…" from Authenticated and AdminOnly. */
 #root > p,
-#root > div > select + p,
+#root > div > label + p,
 section > h2 + p {
   padding: 1rem;
   border: 1px dashed var(--pico-muted-border-color);
@@ -721,7 +721,7 @@ section > h2 + p {
 /* ---------- Profile page ---------- */
 
 /* Round avatar with a ring in the theme colour. */
-img[alt="Avatar"] {
+#root > div > h1 + img {
   display: block;
   width: 112px;
   height: 112px;
@@ -733,7 +733,7 @@ img[alt="Avatar"] {
 }
 
 /* The name line ("dante — Dante Borislav") as a small marquee title. */
-#root > div:has(> input + select) > div:not(:has(input)) > p:first-child {
+#root > div:has(> label + label > select) > div:not(:has(input)) > p:first-child {
   margin-bottom: 0.25rem;
   font-family: var(--heading-font);
   font-size: 1.7rem;
@@ -741,26 +741,26 @@ img[alt="Avatar"] {
   text-transform: uppercase;
 }
 
-#root > div:has(> input + select) > div:not(:has(input)) > p:nth-child(2) {
+#root > div:has(> label + label > select) > div:not(:has(input)) > p:nth-child(2) {
   color: var(--pico-muted-color);
 }
 
 /* The edit form as a card. */
-#root > div:has(> input + select) > div:has(input) {
+#root > div:has(> label + label > select) > div:has(input) {
   padding: 1.25rem;
   border-radius: var(--pico-border-radius);
   background: var(--pico-card-background-color);
   box-shadow: var(--pico-card-box-shadow);
 }
 
-#root > div:has(> input + select) > div:has(input) > button + button {
+#root > div:has(> label + label > select) > div:has(input) > button + button {
   margin-left: 0.5rem;
   --pico-background-color: transparent;
   --pico-color: var(--pico-primary);
 }
 
 /* "Reputation: 42" as a chip. */
-#root > div:has(> input + select) > p:has(+ h2) {
+#root > div:has(> label + label > select) > p:has(+ h2):not(label + p) {
   display: inline-block;
   margin: 1rem 0 0;
   padding: 0.3rem 0.9rem;
@@ -776,23 +776,27 @@ img[alt="Avatar"] {
 }
 
 /* The search field and the sort dropdown on one line. */
-#root > div:has(> input + select) > input {
+#root > div:has(> label + label > select) > label:has(> input) {
   display: inline-block;
   width: calc(100% - 13.5rem);
   margin-right: 0.5rem;
   vertical-align: top;
 }
 
-#root > div:has(> input + select) > input + select {
+#root > div:has(> label + label > select) > label:has(> input) + label {
   display: inline-block;
   width: 12.5rem;
-  min-width: 0;
   vertical-align: top;
 }
 
+#root > div:has(> label + label > select) > label select {
+  width: 100%;
+  min-width: 0;
+}
+
 @media (max-width: 576px) {
-  #root > div:has(> input + select) > input,
-  #root > div:has(> input + select) > input + select {
+  #root > div:has(> label + label > select) > label:has(> input),
+  #root > div:has(> label + label > select) > label:has(> input) + label {
     display: block;
     width: 100%;
     margin-right: 0;
@@ -800,11 +804,11 @@ img[alt="Avatar"] {
 }
 
 /* Posts and comments as small cards instead of bullet points. */
-#root > div:has(> input + select) > ul {
+#root > div:has(> label + label > select) > ul {
   padding: 0;
 }
 
-#root > div:has(> input + select) > ul li {
+#root > div:has(> label + label > select) > ul li {
   list-style: none;
   margin: 0 0 0.6rem;
   padding: 0.75rem 1rem;
@@ -814,11 +818,11 @@ img[alt="Avatar"] {
   transition: box-shadow 0.2s ease;
 }
 
-#root > div:has(> input + select) > ul li:hover {
+#root > div:has(> label + label > select) > ul li:hover {
   box-shadow: 0 0 0 1px var(--pico-primary), var(--pico-card-box-shadow);
 }
 
-#root > div:has(> input + select) > ul li > a {
+#root > div:has(> label + label > select) > ul li > a {
   display: block;
   margin-bottom: 0.2rem;
   font-weight: 600;
@@ -826,18 +830,18 @@ img[alt="Avatar"] {
   text-decoration: none;
 }
 
-#root > div:has(> input + select) > ul li > a:hover {
+#root > div:has(> label + label > select) > ul li > a:hover {
   color: var(--pico-primary);
 }
 
 /* Post cards: the counts under the title are secondary. */
-#root > div:has(> input + select) > input + select + ul li {
+#root > div:has(> label + label > select) > label + label + ul li {
   font-size: 0.9rem;
   color: var(--pico-muted-color);
 }
 
 /* Comment cards: a quote line in the theme colour on the left. */
-#root > div:has(> input + select) > h3 ~ ul li {
+#root > div:has(> label + label > select) > h2 + label + ul li {
   border-left: 3px solid var(--pico-primary);
 }
 
@@ -900,8 +904,10 @@ section > form {
    the label or form, so they share this small muted style. The fields
    themselves are set back to normal text. */
 #root > div > form label,
+#root > div > label,
+#root > div > div > label,
 section > form label,
-#root > div > form:has(> textarea),
+#root > div > form:has(textarea),
 section article form {
   font-size: 0.8rem;
   font-weight: 500;
@@ -910,12 +916,16 @@ section article form {
 }
 
 #root > div > form label,
+#root > div > label,
+#root > div > div > label,
 section > form label {
   margin-bottom: 1.1rem;
   text-transform: uppercase;
 }
 
 #root > div > form :is(input, textarea),
+#root > div > label :is(input, select),
+#root > div > div > label :is(input, select),
 section form textarea {
   margin-top: 0.3rem;
   margin-bottom: 0.3rem;
@@ -933,7 +943,7 @@ section > form button {
 }
 
 /* In the edit forms the counter sits right before Save, so give it room. */
-#root > div > form:has(> textarea) > button:first-of-type,
+#root > div > form:has(> button + button) > button:first-of-type,
 section article form > button:first-of-type {
   margin-left: 0.75rem;
 }
@@ -952,4 +962,21 @@ textarea {
 
 section form textarea {
   min-height: 5rem;
+}
+
+/* The feed's sort dropdown sits under its label, like the other fields. */
+#root > div > label > select {
+  display: block;
+}
+
+/* In the post edit form the "24/64" counter sits between the two labels,
+   so the second label needs space above it. */
+#root > div > form:has(> button + button) > label ~ label {
+  margin-top: 1rem;
+}
+
+/* The comments sort dropdown has no search field beside it, so keep it the
+   same width as the posts one instead of stretching across the page. */
+#root > div:has(> label + label > select) > h2 + label {
+  max-width: 12.5rem;
 }

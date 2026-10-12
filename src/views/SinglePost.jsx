@@ -98,12 +98,18 @@ function SinglePost() {
     <div>
       {isEditing ? (
         <form onSubmit={savePost}>
+          <label>
+            Title
           <input value={title} onChange={(e) => setTitle(e.target.value)} />
+          </label>
           {title.length}/64
+          <label>
+            Content
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
+          </label>
           {content.length}/8192
           <button> Save </button>
           <button type="button" onClick={() => setIsEditing(false)}>

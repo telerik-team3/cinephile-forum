@@ -107,17 +107,23 @@ function Feed() {
     <div>
       <h1>Posts</h1>
       <form onSubmit={handleSearch}>
+        <label>
+          Search posts
         <input type="search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search posts"/>
+        </label>
       </form>
+      <label>
+        Sort by
       <select value={sort} onChange={e => setSort(e.target.value)}>
         <option value={"newest"}>Newest</option>
         <option value={"oldest"}>Oldest</option>
         <option value={"most-comments"}>Most comments</option>
         <option value={"most-liked"}>Most liked</option>
       </select>
+      </label>
       {loading ? <p>Loading</p> : error ? <p>{error}</p> : posts.length > 0 ? renderPosts(sortPosts(posts, sort)) : <p>No posts found</p>}
     </div>
   );
